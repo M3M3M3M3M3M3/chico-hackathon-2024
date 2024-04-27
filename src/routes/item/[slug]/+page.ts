@@ -1,24 +1,21 @@
 import { error } from "@sveltejs/kit";
 import type { PageLoad } from "./$types";
+import safeway_data from "$lib/safeway_clean_data.json";
 
 export type ItemInfo = {
     id: string;
     title: string;
     content: string;
-    img_url: string;
-    price: string;
+    image: string;
+    price: number;
     buy_quality: "GOOD" | "MEDIUM" | "BAD";
 };
 
 export const load: PageLoad<ItemInfo> = ({ params }) => {
-    return {
-        id: "apple",
-        title: "Banana",
-        content: "It is a banana",
-        img_url: "https://purr.objects-us-east-1.dream.io/i/baby2.jpg",
-        price: "$10.00",
-        buy_quality: "BAD",
-    };
+    let id = params.slug;
 
-    // error(404, "Not found");
+    let item = safeway_data.items.filter((item) => item.id === id)[0];
+
+    if (!item) error(404, "Not found");
+    return item;
 };

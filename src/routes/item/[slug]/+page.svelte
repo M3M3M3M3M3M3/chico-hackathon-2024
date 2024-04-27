@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { formatMoney } from "../../../utils";
     import type { ItemInfo } from "./+page";
     import PriceChart from "./PriceChart.svelte";
 
@@ -22,17 +23,15 @@
 <div class="flex flex-col gap-4">
     <div class="grid gap-2 grid-cols-1 md:grid-cols-2">
         <div class="md:rounded-md overflow-hidden">
-            <img alt="I hate the blind" src={data.img_url} />
+            <img alt="I hate the blind" src={data.image} />
         </div>
 
-        <div class="flex flex-col gap-2 px-2 md:p-0">
-            <span class="text-4xl font-extrabold">{data.title}</span>
-
-            <span>{data.content}</span>
+        <div class="flex flex-col gap-8 px-2 md:p-0">
+            <span class="text-3xl font-extrabold">{data.title}</span>
 
             <div class="flex place-items-center flex-col">
                 <span class="text-4xl font-extrabold w-min {priceStyles}"
-                    >{data.price}</span
+                    >{formatMoney(data.price)}</span
                 >
                 {#if data.buy_quality === "GOOD"}
                     <span class="text-sm text-neutral-600"
@@ -46,7 +45,7 @@
                     >
                 {/if}
 
-                {#if data.buy_quality === "MEDIUM"}
+                {#if data.buy_quality === "MEDIUM" || !data.buy_quality}
                     <span class="text-sm text-neutral-600"
                         >This is an OK time buy this product :|</span
                     >
@@ -63,5 +62,9 @@
                 <PriceChart />
             </div>
         </div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+        <span class="text-2xl font-extrabold px-2 md:p-0">Related Items</span>
     </div>
 </div>

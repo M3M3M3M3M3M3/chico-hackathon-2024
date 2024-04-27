@@ -11,7 +11,7 @@
         </div>
     </div>
 
-    <main class="container mx-auto">
+    <main class="container max-w-screen-lg mx-auto">
         <div class="p-0 md:p-4">
             <slot />
         </div>
