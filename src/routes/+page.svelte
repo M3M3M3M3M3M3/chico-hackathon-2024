@@ -182,23 +182,69 @@
                                     keepFocus: true,
                                 });
                             }}
-                            class="border-neutral-300 border-b last:border-0
+                            class={`border-neutral-300 border-b last:border-0 bg-white
                             hover:bg-blue-50 focus:bg-blue-50 focus:outline-none
-                            transition-all gap-4 items-center flex text-left"
+                            transition-all gap-4 items-center flex text-left ${item.availability === "out_of_stock" ? "contrast-75 opacity-50" : ""}}`}
                         >
                             <span
                                 class="h-20 w-20 bg-cover"
                                 style={`background-image: url("${item.image}")`}
                             ></span>
 
-                            <div class="flex flex-col gap-2">
-                                <span class="overflow-ellipsis"
-                                    >{item.title}</span
-                                >
+                            <div class="flex flex-col gap-1">
                                 <div>
-                                    <span class="font-bold"
-                                        >{formatMoney(item.price)}</span
-                                    ><span class="text-sm">/oz</span>
+                                    {#if item.availability === "out_of_stock"}
+                                        <span
+                                            class="bg-neutral-300 px-1 py-1 rounded-sm text-xs mr-1 font-bold"
+                                        >
+                                            OUT OF STOCK</span
+                                        >
+                                    {/if}
+
+                                    <span class="overflow-ellipsis"
+                                        >{item.title}</span
+                                    >
+                                </div>
+                                <div class="flex items-center">
+                                    {#if item.unit_price}
+                                        <span
+                                            class="bg-neutral-300 rounded-sm flex items-end px-1 mr-2"
+                                        >
+                                            <span class="font-bold text-sm"
+                                                >{formatMoney(
+                                                    item.unit_price
+                                                        .canonical_unit
+                                                        .price_per,
+                                                )}</span
+                                            ><span class="text-xs mb-[1px]"
+                                                >/{item.unit_price
+                                                    .canonical_unit
+                                                    .display}</span
+                                            >
+                                        </span>
+
+                                        <span
+                                            class={`px-1 py-1 rounded-sm text-xs`}
+                                        >
+                                            {formatMoney(item.price)}
+                                        </span>
+
+                                        {#if item.upcoming_prices.length !== 0}
+                                            <span
+                                                class="py-1 rounded-sm text-xs line-through text-neutral-400"
+                                            >
+                                                {formatMoney(
+                                                    item.upcoming_prices[0]
+                                                        .price,
+                                                )}</span
+                                            >
+                                        {/if}
+                                    {/if}
+                                    {#if !item.unit_price}
+                                        <span class="font-bold"
+                                            >{formatMoney(item.price)}</span
+                                        >
+                                    {/if}
                                 </div>
                             </div>
                         </button>

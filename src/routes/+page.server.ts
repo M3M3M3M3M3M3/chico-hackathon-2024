@@ -33,10 +33,19 @@ export const load: PageServerLoad = ({ url }) => {
         );
     });
 
-    newItems.sort(
-        (a: any, b: any) =>
-            (a._temp.salesRank ?? 1_000_000) - (b._temp.salesRank ?? 1_000_000),
-    );
+    if (category) {
+        newItems.sort(
+            (a: any, b: any) =>
+                (a.unit_price?.canonical_unit.price_per ?? 1_000_000) -
+                (b.unit_price?.canonical_unit.price_per ?? 1_000_000),
+        );
+    } else {
+        newItems.sort(
+            (a: any, b: any) =>
+                (a._temp.salesRank ?? 1_000_000) -
+                (b._temp.salesRank ?? 1_000_000),
+        );
+    }
 
     let categoryList = new Set<string>();
     for (let item of (safeway_data as any).items) {
