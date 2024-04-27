@@ -7,8 +7,10 @@
   let chart: Chart;
 
   export let priceData: { day: string; price: number }[];
+  export let dealData: { day: string; price: number };
 
   let currentMonthIndex = 0;
+  let maxMonthIndex = 0;
   let monthlyData: {
     [key: string]: { labels: number[]; prices: (number | null)[] };
   } = {};
@@ -34,6 +36,26 @@
       monthlyData[monthKey].prices[dayIndex] = data.price;
     });
     currentMonthIndex = Object.keys(monthlyData).length - 1;
+
+    const dealDate = new Date(dealData.day);
+    const dealYear = dealDate.getUTCFullYear();
+    const dealMonth = dealDate.getUTCMonth();
+    const lastMonthKey = Object.keys(monthlyData).pop();
+    if (lastMonthKey) {
+      const [lastMonthYear, lastMonthMonth] = lastMonthKey
+        .split("-")
+        .map(Number);
+
+      if (
+        dealYear > lastMonthYear ||
+        (dealYear === lastMonthYear && dealMonth > lastMonthMonth)
+      ) {
+        maxMonthIndex = Object.keys(monthlyData).length;
+      } else {
+        maxMonthIndex = Object.keys(monthlyData).length - 1;
+      }
+    }
+    currentMonthIndex = Object.keys(monthlyData).length - 1;
   }
 
   function getCurrentMonthData() {
@@ -46,26 +68,95 @@
   }
 
   function updateChart() {
-    const { labels, prices } = getCurrentMonthData();
+    if (
+      currentMonthIndex === maxMonthIndex &&
+      maxMonthIndex === Object.keys(monthlyData).length
+    ) {
+      const extendedLabels = Array.from({ length: 32 }, (_, i) => i + 1);
+      const extendedPrices = Array(32).fill(null);
 
-    const [year, month] =
-      Object.keys(monthlyData)[currentMonthIndex].split("-");
-    const monthName = new Date(Number(year), Number(month)).toLocaleString(
-      "default",
-      { month: "long" }
-    );
+      chart.data.labels = extendedLabels;
+      chart.data.datasets[0].data = extendedPrices;
 
-    const extendedLabels = Array.from({ length: 32 }, (_, i) => i + 1);
-    const extendedPrices = Array(32).fill(null);
-    labels.forEach((label, index) => {
-      extendedPrices[label - 1] = prices[index];
-    });
+      const dealDate = new Date(dealData.day);
+      const dealDay = dealDate.getUTCDate();
 
-    chart.data.labels = extendedLabels;
-    chart.data.datasets[0].data = extendedPrices;
-    const plugins = chart?.options?.plugins;
-    if (plugins && plugins.title) {
-      plugins.title.text = `${monthName} ${year}`;
+      chart.data.datasets[1] = {
+        label: "Deal",
+        data: [
+          { x: 1, y: dealData.price },
+          { x: dealDay, y: dealData.price },
+        ],
+        fill: false,
+        borderColor: "red",
+        stepped: "before",
+      };
+    } else {
+      const { labels, prices } = getCurrentMonthData();
+
+      const [year, month] =
+        Object.keys(monthlyData)[currentMonthIndex].split("-");
+      const monthName = new Date(Number(year), Number(month)).toLocaleString(
+        "default",
+        { month: "long" }
+      );
+
+      const extendedLabels = Array.from({ length: 32 }, (_, i) => i + 1);
+      const extendedPrices = Array(32).fill(null);
+      labels.forEach((label, index) => {
+        extendedPrices[label - 1] = prices[index];
+      });
+
+      const lastNonNullIndex = prices.findLastIndex((price) => price !== null);
+
+      chart.data.labels = extendedLabels;
+      chart.data.datasets[0].data = extendedPrices;
+
+      if (lastNonNullIndex !== -1) {
+        const dealDate = new Date(dealData.day);
+        const dealYear = dealDate.getUTCFullYear();
+        const dealMonth = dealDate.getUTCMonth();
+        const dealDay = dealDate.getUTCDate();
+
+        if (dealYear === Number(year) && dealMonth === Number(month)) {
+          chart.data.datasets[1] = {
+            label: "Deal",
+            data: [
+              { x: lastNonNullIndex + 1, y: extendedPrices[lastNonNullIndex] },
+              { x: dealDay, y: dealData.price },
+            ],
+            fill: false,
+            borderColor: "red",
+            stepped: "before",
+          };
+        } else if (
+          dealYear === Number(year) &&
+          dealMonth - 1 === Number(month)
+        ) {
+          const daysInCurrentMonth = new Date(
+            Number(year),
+            Number(month) + 1,
+            0
+          ).getDate();
+          chart.data.datasets[1] = {
+            label: "Deal",
+            data: [
+              { x: lastNonNullIndex + 1, y: extendedPrices[lastNonNullIndex] },
+              { x: daysInCurrentMonth, y: extendedPrices[lastNonNullIndex] },
+            ],
+            fill: false,
+            borderColor: "red",
+            stepped: "before",
+          };
+        } else {
+            chart.data.datasets.splice(1, 1);
+        }
+      }
+
+      const plugins = chart?.options?.plugins;
+      if (plugins && plugins.title) {
+        plugins.title.text = `${monthName} ${year}`;
+      }
     }
     chart.update();
   }
@@ -162,41 +253,39 @@
       drawCircleRight.draw(ctx, right - sideOffSet, -5, shiftUpValue);
     },
   };
-function clickHandler() {
-  canvas.addEventListener("click", (event) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    let shiftUp = 164;
-    let sideOffSet = 15;
+  function clickHandler() {
+    canvas.addEventListener("click", (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      let shiftUp = 164;
+      let sideOffSet = 15;
 
-    const { left, right, top, bottom, width, height } = chart.chartArea;
+      const { left, right, top, bottom, width, height } = chart.chartArea;
 
-    if (
-      x >= left + sideOffSet - 15 &&
-      x <= left + sideOffSet + 15 &&
-      y >= height / 2 + top - shiftUp - 15 &&
-      y <= height / 2 + top - shiftUp + 15
-    ) {
-      if (currentMonthIndex > 0) {
-        currentMonthIndex--;
-        updateChart();
-        console.log("left");
+      if (
+        x >= left + sideOffSet - 15 &&
+        x <= left + sideOffSet + 15 &&
+        y >= height / 2 + top - shiftUp - 15 &&
+        y <= height / 2 + top - shiftUp + 15
+      ) {
+        if (currentMonthIndex > 0) {
+          currentMonthIndex--;
+          updateChart();
+        }
+      } else if (
+        x >= right - sideOffSet - 15 &&
+        x <= right - sideOffSet + 15 &&
+        y >= height / 2 + top - shiftUp - 15 &&
+        y <= height / 2 + top - shiftUp + 15
+      ) {
+        if (currentMonthIndex < maxMonthIndex) {
+          currentMonthIndex++;
+          updateChart();
+        }
       }
-    } else if (
-      x >= right - sideOffSet - 15 &&
-      x <= right - sideOffSet + 15 &&
-      y >= height / 2 + top - shiftUp - 15 &&
-      y <= height / 2 + top - shiftUp + 15
-    ) {
-      if (currentMonthIndex < Object.keys(monthlyData).length - 1) {
-        currentMonthIndex++;
-        updateChart();
-        console.log("right");
-      }
-    }
-  });
-}
+    });
+  }
 
   onMount(() => {
     parseDataIntoMonths();
@@ -247,6 +336,14 @@ function clickHandler() {
             fill: false,
             borderColor: "rgb(75, 192, 192)",
             stepped: "before",
+          },
+          {
+            label: "Deal",
+            data: [],
+            borderColor: "rgba(255, 26, 104, 1)",
+            backgroundColor: "rgba(255, 26, 104, 1)",
+            pointRadius: 5,
+            pointHoverRadius: 7,
           },
         ],
       },

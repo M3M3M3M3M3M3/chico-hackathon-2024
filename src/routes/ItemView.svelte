@@ -8,8 +8,6 @@
 
     const PriceData = 
     [
-
-  {"day": "2022-12-31", "price": 118.98},
   {"day": "2023-01-01", "price": 118.98},
   {"day": "2023-01-02", "price": 118.98},
   {"day": "2023-01-03", "price": 118.98},
@@ -111,6 +109,8 @@
   {"day": "2023-04-09", "price": 54.00},
   {"day": "2023-04-10", "price": 54.00}
     ];
+  const DealData = 
+  {"day": "2023-5-15", "price": 54.00};
 
     $effect(() => {
         if (itemVal.buy_quality == "MEDIUM") {
@@ -173,7 +173,7 @@
             <div
                 class="border border-neutral-300 dark:border-neutral-600 rounded-lg p-4 h-96"
             >
-                <PriceChart priceData={PriceData} />
+                <PriceChart priceData={PriceData} dealData={DealData} />
             </div>
         </div>
     </div>
