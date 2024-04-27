@@ -76,7 +76,7 @@
 </svelte:head>
 
 <Modal
-    shown={!!data.item}
+    shown={data && !!data.itemVal}
     close={() => {
         selectedItem = undefined;
         goto(`/?${getParams()}`, {
@@ -87,7 +87,7 @@
         history.back();
     }}
 >
-    <ItemView itemVal={data.item} />
+    <ItemView itemVal={data.itemVal} />
 </Modal>
 
 <section class="flex flex-col gap-4 px-4">
@@ -236,20 +236,16 @@
                                     >
                                 </div>
                                 <div class="flex items-center">
-                                    {#if itemVal.unit_price}
+                                    {#if itemVal.pricePerUnit}
                                         <span
                                             class="bg-neutral-300 rounded-sm flex items-end px-1 mr-2"
                                         >
                                             <span class="font-bold text-sm"
                                                 >{formatMoney(
-                                                    itemVal.unit_price
-                                                        .canonical_unit
-                                                        .price_per,
+                                                    itemVal.pricePerUnit,
                                                 )}</span
                                             ><span class="text-xs mb-[1px]"
-                                                >/{itemVal.unit_price
-                                                    .canonical_unit
-                                                    .display}</span
+                                                >/{itemVal.unitDisplay}</span
                                             >
                                         </span>
 
@@ -259,7 +255,7 @@
                                             {formatMoney(itemVal.price)}
                                         </span>
 
-                                        {#if itemVal.upcoming_prices.length !== 0}
+                                        <!-- {#if itemVal.upcoming_prices.length !== 0}
                                             <span
                                                 class="py-1 rounded-sm text-xs line-through text-neutral-400"
                                             >
@@ -268,9 +264,9 @@
                                                         .price,
                                                 )}</span
                                             >
-                                        {/if}
+                                        {/if} -->
                                     {/if}
-                                    {#if !itemVal.unit_price}
+                                    {#if !itemVal.pricePerUnit}
                                         <span class="font-bold"
                                             >{formatMoney(itemVal.price)}</span
                                         >

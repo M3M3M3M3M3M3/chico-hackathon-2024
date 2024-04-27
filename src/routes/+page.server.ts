@@ -90,8 +90,10 @@ export const load: PageServerLoad = async ({ url }) => {
     let retval = {
         items: newItems,
         categories,
-        item: itemVal,
+        itemVal,
     };
+
+    console.log(retval);
 
     return retval;
 };
