@@ -5,7 +5,7 @@
     import { formatCategory, formatMoney, type ItemInfo } from "../utils";
     import { fade, scale, slide } from "svelte/transition";
     import { cubicInOut, quintInOut, quintOut } from "svelte/easing";
-    import { onMount, untrack } from "svelte";
+    import { onMount } from "svelte";
     import Modal from "./Modal.svelte";
     import ItemView from "./ItemView.svelte";
 
@@ -65,12 +65,6 @@
     shown={data && !!data.itemVal}
     close={() => {
         selectedItem = undefined;
-        goto(`/?${getParams()}`, {
-            replaceState: true,
-            noScroll: true,
-            keepFocus: true,
-        });
-        history.back();
     }}
 >
     <ItemView itemVal={data.itemVal} />
