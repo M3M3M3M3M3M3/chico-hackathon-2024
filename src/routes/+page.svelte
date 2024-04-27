@@ -180,8 +180,8 @@
                     <input
                         bind:value={maxPrice}
                         type="range"
-                        max={Math.max(...data.items.map((i: ItemInfo) => i.price))}
-                        min={Math.min(...data.items.map((i: ItemInfo) => i.price))}
+                        max={Math.max(...data.items.map((i: ItemInfo) => i.prices[0]))}
+                        min={Math.min(...data.items.map((i: ItemInfo) => i.prices[0]))}
                         step={0.01}
                     />
 
