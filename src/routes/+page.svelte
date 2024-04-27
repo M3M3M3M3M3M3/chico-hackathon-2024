@@ -1,4 +1,5 @@
 <script>
+  import FeaturedCategory from "./FeaturedCategory.svelte";
     import FeaturedItem from "./FeaturedItem.svelte";
     import SearchBar from "./SearchBar.svelte";
 </script>
@@ -13,16 +14,16 @@
         <SearchBar />
     </div>
 
-    <span class="font-bold text-lg">Generic Items</span>
+    <span class="font-bold text-lg">Featured Items</span>
 
     <div
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
     >
-        <FeaturedItem />
-        <FeaturedItem />
-        <FeaturedItem />
-        <FeaturedItem />
-        <FeaturedItem />
-        <FeaturedItem />
+        <FeaturedCategory name="Milk"/>
+        <FeaturedCategory name="Ice Cream"/>
+        <FeaturedCategory name="Cracker"/>
+        <FeaturedCategory name="Bread"/>
+        <FeaturedCategory name="Yogurt"/>
+        <FeaturedCategory name="Dog Food"/>
     </div>
 </section>
