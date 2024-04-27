@@ -6,7 +6,7 @@
 
     let priceStyles: string = $state("");
 
-    const priceData = [
+    const PriceData = [
   { "day": "2023-01-01", "price": 93.88 },
   { "day": "2023-01-02", "price": 88.14 },
   { "day": "2023-01-03", "price": 64.88 },
@@ -162,7 +162,7 @@
 
         <div class="p-2 md:p-0">
             <div class="border rounded-lg p-4 h-96">
-                <PriceChart graphData={priceData}/>
+                <PriceChart priceData={PriceData}/>
             </div>
         </div>
     </div>

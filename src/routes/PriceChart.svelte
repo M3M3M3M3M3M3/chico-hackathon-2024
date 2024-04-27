@@ -6,7 +6,7 @@
   let canvas: HTMLCanvasElement;
   let chart: Chart;
 
-  export let graphData: { day: string; price: number }[];
+  export let priceData: { day: string; price: number }[];
 
   let currentMonthIndex = 0;
   let monthlyData: {
@@ -15,7 +15,7 @@
 
   function parseDataIntoMonths() {
     monthlyData = {};
-    graphData.forEach((data) => {
+    priceData.forEach((data) => {
       const dataDate = new Date(data.day);
       const year = dataDate.getUTCFullYear();
       const month = dataDate.getUTCMonth();
