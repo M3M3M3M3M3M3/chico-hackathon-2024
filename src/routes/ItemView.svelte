@@ -158,7 +158,7 @@
     </div>
 
     <div class="flex flex-col gap-2">
-        <span class="text-2xl font-extrabold px-2 md:p-0">Price History</span>
+        <span class="text-2xl font-extrabold px-2 md:p-0 select-none">Price History</span>
 
         <div class="p-2 md:p-0">
             <div class="border rounded-lg p-4 h-96">
