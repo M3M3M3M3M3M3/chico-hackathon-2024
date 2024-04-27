@@ -71,7 +71,11 @@ export const load: PageServerLoad = async ({ url }) => {
             ),
         )
         .groupBy(item.id)
-        .orderBy(category ? itemPrice.pricePerUnit : itemPrice.salesRank)
+        .orderBy(
+            category
+                ? sql`MIN(${itemPrice.pricePerUnit})`
+                : sql`MIN(${itemPrice.salesRank})`,
+        )
         .limit(category ? 1000 : 20);
 
     // item
