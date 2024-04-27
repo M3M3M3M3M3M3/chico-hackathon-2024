@@ -1,6 +1,6 @@
 import type { PageServerLoad } from "./$types";
 import safeway_data from "$lib/safeway_clean_data.json";
-import { distance } from "fastest-levenshtein";
+// import { distance } from "fastest-levenshtein";
 import Fuse from "fuse.js";
 
 export type SearchParams = {
