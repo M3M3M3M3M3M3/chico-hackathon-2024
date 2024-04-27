@@ -30,7 +30,7 @@
     );
 
     $effect(() => {
-        maxPrice = Math.max(...data.items.map((item: ItemInfo) => item.price));
+        maxPrice = Math.max(...data.items.map((i: ItemInfo) => i.price));
     });
 
     let searchInput: HTMLInputElement;
@@ -87,7 +87,7 @@
         history.back();
     }}
 >
-    <ItemView item={data.item} />
+    <ItemView itemVal={data.item} />
 </Modal>
 
 <section class="flex flex-col gap-4 px-4">
@@ -111,7 +111,7 @@
                     onfocus={() => {
                         searchInput.focus();
                     }}
-                    class="flex items-center rounded-full pr-6 text-lg bg-blue-50 overflow-hidden focus-within:ring-4 transition-all ring-2 placeholder-blue-400 ring-blue-600 w-full pl-2"
+                    class="flex items-center rounded-full pr-6 text-lg bg-blue-50 overflow-hidden focus-within:ring-2 transition-all border-2 placeholder-blue-400 border-blue-600 ring-blue-600 w-full pl-2"
                 >
                     {#if selectedCategory}
                         <div
@@ -189,8 +189,8 @@
                     <input
                         bind:value={maxPrice}
                         type="range"
-                        max={Math.max(...data.items.map((item: ItemInfo) => item.price))}
-                        min={Math.min(...data.items.map((item: ItemInfo) => item.price))}
+                        max={Math.max(...data.items.map((i: ItemInfo) => i.price))}
+                        min={Math.min(...data.items.map((i: ItemInfo) => i.price))}
                         step={0.01}
                     />
 
@@ -203,10 +203,10 @@
                 <div
                     class="w-full border-neutral-300 flex flex-col border rounded-xl overflow-hidden mt-4"
                 >
-                    {#each data.items.filter(item => item.price <= maxPrice) as item}
+                    {#each data.items.filter(i => i.price <= maxPrice) as itemVal}
                         <button
                             onclick={() => {
-                                selectedItem = item.id;
+                                selectedItem = itemVal.id;
                                 goto(`/?${getParams()}`, {
                                     noScroll: true,
                                     keepFocus: true,
@@ -214,16 +214,16 @@
                             }}
                             class={`border-neutral-300 border-b last:border-0 bg-white
                             hover:bg-blue-50 focus:bg-blue-50 focus:outline-none
-                            transition-all gap-4 items-center flex text-left ${item.availability === "out_of_stock" ? "contrast-75 opacity-50" : ""}}`}
+                            transition-all gap-4 items-center flex text-left ${itemVal.availability === "out_of_stock" ? "contrast-75 opacity-50" : ""}}`}
                         >
                             <span
                                 class="h-20 w-20 bg-cover"
-                                style={`background-image: url("${item.image}")`}
+                                style={`background-image: url("${itemVal.image}")`}
                             ></span>
 
                             <div class="flex flex-col gap-1">
                                 <div>
-                                    {#if item.availability === "out_of_stock"}
+                                    {#if itemVal.availability === "out_of_stock"}
                                         <span
                                             class="bg-neutral-300 px-1 py-1 rounded-sm text-xs mr-1 font-bold"
                                         >
@@ -232,22 +232,22 @@
                                     {/if}
 
                                     <span class="overflow-ellipsis"
-                                        >{item.title}</span
+                                        >{itemVal.title}</span
                                     >
                                 </div>
                                 <div class="flex items-center">
-                                    {#if item.unit_price}
+                                    {#if itemVal.unit_price}
                                         <span
                                             class="bg-neutral-300 rounded-sm flex items-end px-1 mr-2"
                                         >
                                             <span class="font-bold text-sm"
                                                 >{formatMoney(
-                                                    item.unit_price
+                                                    itemVal.unit_price
                                                         .canonical_unit
                                                         .price_per,
                                                 )}</span
                                             ><span class="text-xs mb-[1px]"
-                                                >/{item.unit_price
+                                                >/{itemVal.unit_price
                                                     .canonical_unit
                                                     .display}</span
                                             >
@@ -256,23 +256,23 @@
                                         <span
                                             class={`px-1 py-1 rounded-sm text-xs`}
                                         >
-                                            {formatMoney(item.price)}
+                                            {formatMoney(itemVal.price)}
                                         </span>
 
-                                        {#if item.upcoming_prices.length !== 0}
+                                        {#if itemVal.upcoming_prices.length !== 0}
                                             <span
                                                 class="py-1 rounded-sm text-xs line-through text-neutral-400"
                                             >
                                                 {formatMoney(
-                                                    item.upcoming_prices[0]
+                                                    itemVal.upcoming_prices[0]
                                                         .price,
                                                 )}</span
                                             >
                                         {/if}
                                     {/if}
-                                    {#if !item.unit_price}
+                                    {#if !itemVal.unit_price}
                                         <span class="font-bold"
-                                            >{formatMoney(item.price)}</span
+                                            >{formatMoney(itemVal.price)}</span
                                         >
                                     {/if}
                                 </div>

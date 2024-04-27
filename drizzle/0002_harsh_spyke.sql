@@ -1,0 +1,1 @@
+ALTER TABLE item_price ADD `availability` text;

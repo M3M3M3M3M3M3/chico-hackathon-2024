@@ -12,9 +12,11 @@
         "@fontsource/fira-mono": "^4.5.10",
         "@neoconfetti/svelte": "^1.0.0",
         "@sveltejs/adapter-auto": "^3.0.0",
+        "@sveltejs/adapter-cloudflare": "^4.4.0",
         "@sveltejs/kit": "^2.0.0",
         "@sveltejs/vite-plugin-svelte": "^3.0.0",
         "autoprefixer": "^10.4.19",
+        "drizzle-kit": "^0.20.17",
         "postcss": "^8.4.38",
         "svelte": "^5.0.0-next.1",
         "svelte-check": "^3.6.0",
@@ -25,7 +27,10 @@
     },
     "type": "module",
     "dependencies": {
+        "@libsql/client": "^0.6.0",
         "chart.js": "^4.4.2",
+        "dotenv": "^16.4.5",
+        "drizzle-orm": "^0.30.9",
         "fuse.js": "^7.0.0"
     }
 }

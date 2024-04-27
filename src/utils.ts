@@ -15,6 +15,6 @@ export type ItemInfo = {
     content: string;
     image: string;
     price: number;
-    type: string;
+    category: string;
     buy_quality: "GOOD" | "MEDIUM" | "BAD";
 };
