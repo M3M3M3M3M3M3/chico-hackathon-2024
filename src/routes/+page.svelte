@@ -2,14 +2,17 @@
     import type { FormEventHandler } from "svelte/elements";
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
-    import { formatCategory, formatMoney } from "../utils";
+    import { formatCategory, formatMoney, type ItemInfo } from "../utils";
     import { fade, scale, slide } from "svelte/transition";
     import { cubicInOut, quintInOut, quintOut } from "svelte/easing";
     import { onMount, untrack } from "svelte";
     import Modal from "./Modal.svelte";
     import ItemView from "./ItemView.svelte";
 
+    let { data } = $props();
+
     let userHasTyped = $state(!!$page.url.searchParams.get("q"));
+    let maxPrice = $state(0);
 
     let query = $state($page.url.searchParams.get("q") ?? "");
     let sortType: string = $state(
@@ -25,6 +28,10 @@
     let selectedItem: string | undefined = $state(
         $page.url.searchParams.get("item") ?? "",
     );
+
+    $effect(() => {
+        maxPrice = Math.max(...data.items.map((item: ItemInfo) => item.price));
+    });
 
     let searchInput: HTMLInputElement;
 
@@ -61,8 +68,6 @@
             selectedCategory = undefined;
         }
     };
-
-    let { data } = $props();
 </script>
 
 <svelte:head>
@@ -71,7 +76,7 @@
 </svelte:head>
 
 <Modal
-    shown={data.item}
+    shown={!!data.item}
     close={() => {
         selectedItem = undefined;
         goto(`/?${getParams()}`, {
@@ -169,11 +174,36 @@
                 {/if}
             </div>
 
+            {#if selectedCategory && data.items.length !== 0}
+                <div
+                    transition:slide={{
+                        duration: 300,
+                        easing: cubicInOut,
+                        axis: "y",
+                    }}
+                    class="rounded-xl p-4 border border-neutral-300 mt-4"
+                >
+                    <div class="flex gap-2 items-center">
+                    Maximum Price:
+
+                    <input
+                        bind:value={maxPrice}
+                        type="range"
+                        max={Math.max(...data.items.map((item: ItemInfo) => item.price))}
+                        min={Math.min(...data.items.map((item: ItemInfo) => item.price))}
+                        step={0.01}
+                    />
+
+                    {formatMoney(maxPrice)}
+                </div>
+                </div>
+            {/if}
+
             {#if data.items.length !== 0}
                 <div
                     class="w-full border-neutral-300 flex flex-col border rounded-xl overflow-hidden mt-4"
                 >
-                    {#each data.items as item}
+                    {#each data.items.filter(item => item.price <= maxPrice) as item}
                         <button
                             onclick={() => {
                                 selectedItem = item.id;
