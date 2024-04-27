@@ -106,7 +106,7 @@
                     onfocus={() => {
                         searchInput.focus();
                     }}
-                    class="flex items-center rounded-full pr-6 text-lg bg-blue-50 overflow-hidden focus-within:ring-2 transition-all border-2 placeholder-blue-400 border-blue-600 ring-blue-600 w-full pl-2"
+                    class="flex items-center rounded-full pr-6 text-lg bg-blue-50 dark:bg-amber-200 dark:border-amber-600 dark:ring-amber-600 dark:text-black overflow-hidden focus-within:ring-2 transition-all border-2 border-blue-600 ring-blue-600 w-full pl-2"
                 >
                     {#if selectedCategory}
                         <div
@@ -126,11 +126,11 @@
                         bind:value={query}
                         onkeydown={onKeyDown}
                         placeholder="Search"
-                        class="bg-inherit flex-grow outline-none px-4 py-4"
+                        class="bg-inherit flex-grow outline-none px-4 py-4 dark:placeholder-amber-600 placeholder-blue-400"
                     />
 
                     <svg
-                        class="h-7 w-7 fill-blue-700"
+                        class="h-7 w-7 fill-blue-700 dark:fill-amber-600"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         id="search"
@@ -159,7 +159,7 @@
                                         query = "";
                                         searchInput.focus();
                                     }}
-                                    class="px-4 py-2 border-neutral-500 rounded-full border hover:bg-blue-50 focus:bg-blue-50 transition-all capitalize text-nowrap"
+                                    class="px-4 py-2 border-neutral-300 dark:border-neutral-600 dark:bg-black rounded-full border hover:bg-blue-50 focus:bg-blue-50 focus:dark:bg-amber-900 hover:dark:bg-amber-900 transition-all capitalize text-nowrap"
                                 >
                                     {formatCategory(category)}
                                 </button>
@@ -176,7 +176,7 @@
                         easing: cubicInOut,
                         axis: "y",
                     }}
-                    class="rounded-xl p-4 border border-neutral-300 mt-4"
+                    class="rounded-xl p-4 border border-neutral-300 dark:border-neutral-600 mt-4"
                 >
                     <div class="flex gap-2 items-center">
                     Maximum Price:
@@ -196,7 +196,7 @@
 
             {#if data.items.length !== 0}
                 <div
-                    class="w-full border-neutral-300 flex flex-col border rounded-xl overflow-hidden mt-4"
+                    class="w-full border-neutral-300 dark:border-neutral-600 flex flex-col border rounded-xl overflow-hidden mt-4"
                 >
                     {#each data.items.filter(i => i.price <= maxPrice) as itemVal}
                         <button
@@ -207,8 +207,8 @@
                                     keepFocus: true,
                                 });
                             }}
-                            class={`border-neutral-300 border-b last:border-0 bg-white
-                            hover:bg-blue-50 focus:bg-blue-50 focus:outline-none
+                            class={`border-neutral-300 border-b last:border-0 bg-white dark:bg-black dark:border-neutral-600
+                            hover:bg-blue-50 focus:bg-blue-50 focus:dark:bg-amber-900 hover:dark:bg-amber-900 focus:outline-none
                             transition-all gap-4 items-center flex text-left ${itemVal.availability === "out_of_stock" ? "contrast-75 opacity-50" : ""}}`}
                         >
                             <span
@@ -220,7 +220,7 @@
                                 <div>
                                     {#if itemVal.availability === "out_of_stock"}
                                         <span
-                                            class="bg-neutral-300 px-1 py-1 rounded-sm text-xs mr-1 font-bold"
+                                            class="bg-neutral-300 dark:bg-neutral-600 px-1 py-1 rounded-sm text-xs mr-1 font-bold"
                                         >
                                             OUT OF STOCK</span
                                         >
@@ -233,7 +233,7 @@
                                 <div class="flex items-center">
                                     {#if itemVal.pricePerUnit}
                                         <span
-                                            class="bg-neutral-300 rounded-sm flex items-end px-1 mr-2"
+                                            class="bg-neutral-300 dark:bg-neutral-600 rounded-sm flex items-end px-1 mr-2"
                                         >
                                             <span class="font-bold text-sm"
                                                 >{formatMoney(

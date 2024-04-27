@@ -28,7 +28,7 @@
         onclick={() => {
             close();
         }}
-        class="z-50 fixed left-0 right-0 top-0 bottom-0 bg-black/10 flex sm:place-items-center place-items-end justify-center overscroll-none"
+        class="z-50 fixed left-0 right-0 top-0 bottom-0 bg-black/10 dark:bg-white/10 flex sm:place-items-center place-items-end justify-center overscroll-none"
     >
         <div
             transition:scale={{
@@ -40,11 +40,11 @@
             onclick={(e) => {
                 e.stopImmediatePropagation();
             }}
-            class="container relative w-full h-[90dvh] sm:h-min overflow-auto sm:max-w-screen-sm max-h-screen rounded-t-xl sm:rounded-b-xl shadow-lg bg-white p-4"
+            class="container relative w-full h-[90dvh] sm:h-min overflow-auto sm:max-w-screen-sm max-h-screen rounded-t-xl sm:rounded-b-xl shadow-lg bg-white dark:bg-black p-4"
         >
             <button
                 onclick={() => close()}
-                class="absolute hover:bg-neutral-800 transition-colors top-4 right-4 w-8 h-8 aspect-square rounded-full bg-black text-white text-center"
+                class="absolute hover:bg-neutral-800 transition-colors top-4 right-4 w-8 h-8 aspect-square rounded-full bg-black dark:bg-white dark:hover:bg-neutral-200 dark:text-black text-white text-center"
             >
                 ×
             </button>

@@ -127,9 +127,9 @@
                 <span class="text-3xl font-extrabold">{itemVal.title}</span>
 
                 <span
-                    class="bg-neutral-300 px-2 py-1 text-sm rounded-full capitalize"
-                    >{formatCategory(itemVal.category)}</span
-                >
+                    class="bg-neutral-300 dark:bg-neutral-600 px-2 py-1 text-sm rounded-full capitalize"
+                    >{formatCategory(itemVal.category)}
+                </span>
             </div>
 
             <div class="flex place-items-center flex-col">
@@ -137,19 +137,19 @@
                     >{formatMoney(itemVal.price)}</span
                 >
                 {#if itemVal.buy_quality === "GOOD"}
-                    <span class="text-sm text-neutral-600"
+                    <span class="text-sm text-neutral-600 dark:text-neutral-300"
                         >This is a good time to buy this product :)</span
                     >
                 {/if}
 
                 {#if itemVal.buy_quality === "BAD"}
-                    <span class="text-sm text-neutral-600"
+                    <span class="text-sm text-neutral-600 dark:text-neutral-300"
                         >This is a bad time to buy this product :(</span
                     >
                 {/if}
 
                 {#if itemVal.buy_quality === "MEDIUM" || !itemVal.buy_quality}
-                    <span class="text-sm text-neutral-600"
+                    <span class="text-sm text-neutral-600 dark:text-neutral-300"
                         >This is an OK time buy this product :|</span
                     >
                 {/if}
@@ -163,7 +163,9 @@
         >
 
         <div class="p-2 md:p-0">
-            <div class="border rounded-lg p-4 h-96">
+            <div
+                class="border border-neutral-300 dark:border-neutral-600 rounded-lg p-4 h-96"
+            >
                 <PriceChart priceData={PriceData} />
             </div>
         </div>
