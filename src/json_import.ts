@@ -6,6 +6,7 @@ import { configDotenv } from "dotenv";
 import * as schema from "./schema";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
+import { eq } from "drizzle-orm";
 
 configDotenv();
 
@@ -22,31 +23,28 @@ for (let u of units) {
     unitMapping[u.unitType!] = u.id;
 }
 
-for (let item of safeway_clean_data.items.slice(985)) {
+for (let item of safeway_clean_data.items) {
     try {
-        let data = await db
-            .insert(schema.item)
-            .values({
-                storeId: item.id,
-                title: item.title,
-                category: item.type,
-                imageUrl: item.image,
-                snapEbt: item.snap_ebt,
-            })
-            .returning({ id: schema.item.id });
+        for (let upcoming_price of item.upcoming_prices) {
+            let data = await db
+                .select({ id: schema.item.id })
+                .from(schema.item)
+                .where(eq(schema.item.storeId, item.id));
 
-        await db.insert(schema.itemPrice).values({
-            itemId: data[0].id,
-            date: new Date(),
-            salesRank: item._temp.sales_rank,
-            price: item.price,
-            unitId: item.unit_price
-                ? unitMapping[item.unit_price.type]
-                : undefined,
-            pricePerUnit: item.unit_price?.canonical_unit.price_per,
-            totalUnits: item.unit_price?.canonical_unit.total_units,
-            availability: item.availability,
-        });
+            console.log("inserting", data);
+
+            await db.insert(schema.itemPrice).values({
+                itemId: data[0].id,
+                date: new Date(upcoming_price.date),
+                price: upcoming_price.price,
+                // unitId: item.unit_price
+                //     ? unitMapping[item.unit_price.type]
+                //     : undefined,
+                // pricePerUnit: item.unit_price?.canonical_unit.price_per,
+                // totalUnits: item.unit_price?.canonical_unit.total_units,
+                // availability: item.availability,
+            });
+        }
     } catch (e) {
         console.log(e);
     }

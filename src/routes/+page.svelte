@@ -23,7 +23,7 @@
     );
 
     $effect(() => {
-        maxPrice = Math.max(...data.items.map((i: ItemInfo) => i.price));
+        maxPrice = Math.max(...data.items.map((i: ItemInfo) => i.prices[0]));
     });
 
     let searchInput: HTMLInputElement;
@@ -50,10 +50,6 @@
     });
 
     const onKeyDown = (e: KeyboardEvent) => {
-
-        // if (e.key === "Enter") {
-        //     goto(`/search?q=${encodeURIComponent(searchInput.value)}`);
-        // }
         if (e.key === "Backspace" && !query) {
             selectedCategory = undefined;
         }
@@ -82,7 +78,7 @@
 
 <section class="flex flex-col gap-4 px-4">
     <div class="flex justify-center">
-        <div class="flex flex-col w-full h-fit">
+        <div class="flex flex-col w-full h-fit mt-4">
             {#if !query && !selectedCategory}
                 <span
                     out:slide={{
@@ -198,7 +194,7 @@
                 <div
                     class="w-full border-neutral-300 dark:border-neutral-600 flex flex-col border rounded-xl overflow-hidden mt-4"
                 >
-                    {#each data.items.filter(i => i.price <= maxPrice) as itemVal}
+                    {#each data.items.filter(i => i.prices[0] <= maxPrice) as itemVal}
                         <button
                             onclick={() => {
                                 selectedItem = itemVal.id;
@@ -212,7 +208,7 @@
                             transition-all gap-4 items-center flex text-left ${itemVal.availability === "out_of_stock" ? "contrast-75 opacity-50" : ""}}`}
                         >
                             <span
-                                class="h-20 w-20 bg-cover"
+                                class="h-20 w-20 min-w-20 bg-cover"
                                 style={`background-image: url("${itemVal.image}")`}
                             ></span>
 
@@ -247,19 +243,16 @@
                                         <span
                                             class={`px-1 py-1 rounded-sm text-xs`}
                                         >
-                                            {formatMoney(itemVal.price)}
+                                            {formatMoney(itemVal.prices[0])}
                                         </span>
 
-                                        <!-- {#if itemVal.upcoming_prices.length !== 0}
+                                        {#if itemVal.prices[1] && itemVal.prices[1] !== itemVal.prices[0]}
                                             <span
                                                 class="py-1 rounded-sm text-xs line-through text-neutral-400"
                                             >
-                                                {formatMoney(
-                                                    itemVal.upcoming_prices[0]
-                                                        .price,
-                                                )}</span
+                                                {formatMoney(itemVal.prices[1])}</span
                                             >
-                                        {/if} -->
+                                        {/if}
                                     {/if}
                                     {#if !itemVal.pricePerUnit}
                                         <span class="font-bold"

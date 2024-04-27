@@ -53,17 +53,17 @@ export const load: PageServerLoad = async ({ url }) => {
         .select({
             id: item.storeId,
             title: item.title,
-            date: max(itemPrice.date),
-            price: itemPrice.price,
+            dates: sql`group_concat(${itemPrice.date})`,
+            prices: sql`group_concat(${itemPrice.price})`,
             image: item.imageUrl,
-            availability: itemPrice.availability,
-            pricePerUnit: itemPrice.pricePerUnit,
+            availability: sql`group_concat(${itemPrice.availability})`,
+            pricePerUnit: sql`group_concat(${itemPrice.pricePerUnit})`,
             category: item.category,
-            unitDisplay: unit.unitDisplay,
+            unitDisplay: sql`group_concat(${unit.unitDisplay})`,
         })
         .from(item)
         .leftJoin(itemPrice, eq(item.id, itemPrice.itemId))
-        .innerJoin(unit, eq(itemPrice.unitId, unit.id))
+        .leftJoin(unit, eq(itemPrice.unitId, unit.id))
         .where(
             and(
                 sql`${item.title} LIKE '%' || ${query} || '%' COLLATE NOCASE`,
@@ -73,6 +73,27 @@ export const load: PageServerLoad = async ({ url }) => {
         .groupBy(item.id)
         .orderBy(category ? itemPrice.pricePerUnit : itemPrice.salesRank)
         .limit(category ? 1000 : 20);
+
+    // item
+    newItems = newItems.map((i) => ({
+        id: i.id,
+        title: i.title,
+        dates: (i.dates as any)
+            .split(",")
+            .map((d: string) => new Date(+d * 1000)) as Date[],
+        prices: (i.prices as any).split(",").map((p: string) => +p) as number[],
+        image: i.image,
+        availability: i.availability,
+        pricePerUnit: i.pricePerUnit,
+        category: i.category,
+        unitDisplay: i.unitDisplay,
+    }));
+
+    // console.log(newItems);
+
+    // for (let item of newItems) {
+    //     console.log(item.prices, item.dates);
+    // }
 
     let categories = (
         await db
@@ -89,13 +110,9 @@ export const load: PageServerLoad = async ({ url }) => {
         .map((i) => i.item)
         .slice(0, 10);
 
-    let retval = {
+    return {
         items: newItems,
         categories,
         itemVal,
     };
-
-    console.log(retval);
-
-    return retval;
 };
