@@ -14,7 +14,7 @@ export const load: PageServerLoad = ({ url }) => {
     let category = url.searchParams.get("category") ?? "";
     let query = url.searchParams.get("q") ?? "";
 
-    if (!query) {
+    if (!query && !category) {
         return { categories: [], items: [] };
     }
 

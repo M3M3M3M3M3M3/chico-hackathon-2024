@@ -27,7 +27,12 @@
     });
 
     $effect(() => {
-        goto(`/?q=${query}&sortType=${sortType}&sortBy=${sortBy}`, {
+        const params = new URLSearchParams();
+
+        if (selectedCategory) params.append("category", selectedCategory);
+        params.append("q", query);
+
+        goto(`/?${params.toString()}`, {
             replaceState: true,
             keepFocus: true,
         });
