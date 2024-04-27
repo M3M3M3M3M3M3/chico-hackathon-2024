@@ -1,5 +1,6 @@
 <script>
     import FeaturedItem from "./FeaturedItem.svelte";
+    import SearchBar from "./SearchBar.svelte";
 </script>
 
 <svelte:head>
@@ -8,6 +9,10 @@
 </svelte:head>
 
 <section class="flex flex-col gap-4 px-4">
+    <div class="flex justify-center">
+        <SearchBar />
+    </div>
+
     <span class="font-bold text-lg">Generic Items</span>
 
     <div

@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { ItemInfo } from "./+page";
+    import PriceChart from "./PriceChart.svelte";
 
     export let data: ItemInfo;
 
@@ -21,10 +22,7 @@
 <div class="flex flex-col gap-4">
     <div class="grid gap-2 grid-cols-1 md:grid-cols-2">
         <div class="md:rounded-md overflow-hidden">
-            <img
-                alt="I hate the blind"
-                src="https://purr.objects-us-east-1.dream.io/i/baby2.jpg"
-            />
+            <img alt="I hate the blind" src={data.img_url} />
         </div>
 
         <div class="flex flex-col gap-2 px-2 md:p-0">
@@ -34,7 +32,7 @@
 
             <div class="flex place-items-center flex-col">
                 <span class="text-4xl font-extrabold w-min {priceStyles}"
-                    >$10.00</span
+                    >{data.price}</span
                 >
                 {#if data.buy_quality === "GOOD"}
                     <span class="text-sm text-neutral-600"
@@ -61,7 +59,9 @@
         <span class="text-2xl font-extrabold px-2 md:p-0">Price History</span>
 
         <div class="p-2 md:p-0">
-            <div class="border rounded-lg h-96"></div>
+            <div class="border rounded-lg p-4 h-96">
+                <PriceChart />
+            </div>
         </div>
     </div>
 </div>
