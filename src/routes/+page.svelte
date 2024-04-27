@@ -256,7 +256,7 @@
                                     {/if}
                                     {#if !itemVal.pricePerUnit}
                                         <span class="font-bold"
-                                            >{formatMoney(itemVal.price)}</span
+                                            >{formatMoney(itemVal.prices[0])}</span
                                         >
                                     {/if}
                                 </div>
