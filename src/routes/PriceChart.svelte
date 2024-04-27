@@ -162,47 +162,41 @@
       drawCircleRight.draw(ctx, right - sideOffSet, -5, shiftUpValue);
     },
   };
+function clickHandler() {
+  canvas.addEventListener("click", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    let shiftUp = 164;
+    let sideOffSet = 15;
 
-  function clickHandler() {
-    const {
-      ctx,
-      canvas,
-      chartArea: { left, right, top, bottom, width, height },
-    } = chart;
+    const { left, right, top, bottom, width, height } = chart.chartArea;
 
-    canvas.addEventListener("click", (event) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      let shiftUp = 164;
-      let sideOffSet = 15;
-
-      console.log("click", x, y);
-      if (
-        x >= left + sideOffSet - 15 &&
-        x <= left + sideOffSet + 15 &&
-        y >= height / 2 + top - shiftUp - 15 &&
-        y <= height / 2 + top - shiftUp + 15
-      ) {
-        if (currentMonthIndex > 0) {
-          currentMonthIndex--;
-          updateChart();
-          console.log("left");
-        }
-      } else if (
-        x >= right - sideOffSet - 15 &&
-        x <= right - sideOffSet + 15 &&
-        y >= height / 2 + top - shiftUp - 15 &&
-        y <= height / 2 + top - shiftUp + 15
-      ) {
-        if (currentMonthIndex < Object.keys(monthlyData).length - 1) {
-          currentMonthIndex++;
-          updateChart();
-          console.log("right");
-        }
+    if (
+      x >= left + sideOffSet - 15 &&
+      x <= left + sideOffSet + 15 &&
+      y >= height / 2 + top - shiftUp - 15 &&
+      y <= height / 2 + top - shiftUp + 15
+    ) {
+      if (currentMonthIndex > 0) {
+        currentMonthIndex--;
+        updateChart();
+        console.log("left");
       }
-    });
-  }
+    } else if (
+      x >= right - sideOffSet - 15 &&
+      x <= right - sideOffSet + 15 &&
+      y >= height / 2 + top - shiftUp - 15 &&
+      y <= height / 2 + top - shiftUp + 15
+    ) {
+      if (currentMonthIndex < Object.keys(monthlyData).length - 1) {
+        currentMonthIndex++;
+        updateChart();
+        console.log("right");
+      }
+    }
+  });
+}
 
   onMount(() => {
     parseDataIntoMonths();
