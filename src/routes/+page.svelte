@@ -2,7 +2,7 @@
     import type { FormEventHandler } from "svelte/elements";
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
-    import { formatMoney } from "../utils";
+    import { formatCategory, formatMoney } from "../utils";
     import { fade, scale, slide } from "svelte/transition";
     import { cubicInOut, quintInOut, quintOut } from "svelte/easing";
     import { onMount, untrack } from "svelte";
@@ -115,9 +115,9 @@
                                 easing: cubicInOut,
                                 axis: "x",
                             }}
-                            class="rounded-full px-4 py-2 text-white bg-neutral-700"
+                            class="rounded-full px-4 py-2 text-white bg-neutral-700 capitalize text-nowrap"
                         >
-                            {selectedCategory}
+                            {formatCategory(selectedCategory)}
                         </div>
                     {/if}
 
@@ -159,9 +159,9 @@
                                         query = "";
                                         searchInput.focus();
                                     }}
-                                    class="px-4 py-2 border-neutral-500 rounded-full border hover:bg-blue-50 focus:bg-blue-50 transition-all"
+                                    class="px-4 py-2 border-neutral-500 rounded-full border hover:bg-blue-50 focus:bg-blue-50 transition-all capitalize text-nowrap"
                                 >
-                                    {category}
+                                    {formatCategory(category)}
                                 </button>
                             {/each}
                         </div>

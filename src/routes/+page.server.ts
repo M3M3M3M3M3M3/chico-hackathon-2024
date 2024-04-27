@@ -1,5 +1,7 @@
 import type { PageServerLoad } from "./$types";
 import safeway_data from "$lib/safeway_clean_data.json";
+import { distance } from "fastest-levenshtein";
+import Fuse from "fuse.js";
 
 export type SearchParams = {
     query: string;
@@ -52,9 +54,12 @@ export const load: PageServerLoad = ({ url }) => {
         categoryList.add(item.type);
     }
 
-    let categories = Array.from(categoryList).filter((item) =>
-        item.toLowerCase().includes(query.toLowerCase()),
-    );
+    let categories = Array.from(categoryList);
+    const fuse = new Fuse(categories);
+    categories = fuse
+        .search(query)
+        .map((i) => i.item)
+        .slice(0, 10);
 
     if (!category) {
         newItems = newItems.slice(0, 20);

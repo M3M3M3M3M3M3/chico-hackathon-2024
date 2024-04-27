@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { formatMoney, type ItemInfo } from "../utils";
+    import { formatCategory, formatMoney, type ItemInfo } from "../utils";
     import PriceChart from "./PriceChart.svelte";
 
     let { item }: { item: ItemInfo } = $props();
@@ -24,7 +24,14 @@
         </div>
 
         <div class="flex flex-col gap-8 px-2 md:p-0">
-            <span class="text-3xl font-extrabold">{item.title}</span>
+            <div class="flex flex-col items-start gap-2">
+                <span class="text-3xl font-extrabold">{item.title}</span>
+
+                <span
+                    class="bg-neutral-300 px-2 py-1 text-sm rounded-full capitalize"
+                    >{formatCategory(item.type)}</span
+                >
+            </div>
 
             <div class="flex place-items-center flex-col">
                 <span class="text-4xl font-extrabold w-min {priceStyles}"
@@ -59,9 +66,5 @@
                 <PriceChart />
             </div>
         </div>
-    </div>
-
-    <div class="flex flex-col gap-2">
-        <span class="text-2xl font-extrabold px-2 md:p-0">Related Items</span>
     </div>
 </div>
