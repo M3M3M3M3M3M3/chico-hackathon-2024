@@ -40,7 +40,7 @@
             onclick={(e) => {
                 e.stopImmediatePropagation();
             }}
-            class="container relative w-full h-[90vh] overflow-auto sm:max-w-screen-sm max-h-screen rounded-t-xl sm:rounded-b-xl shadow-lg bg-white p-4"
+            class="container relative w-full h-[90dvh] sm:h-min overflow-auto sm:max-w-screen-sm max-h-screen rounded-t-xl sm:rounded-b-xl shadow-lg bg-white p-4"
         >
             <button
                 onclick={() => close()}

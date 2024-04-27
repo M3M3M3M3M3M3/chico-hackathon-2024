@@ -117,7 +117,7 @@
 </script>
 
 <div class="flex flex-col gap-4">
-    <div class="grid gap-2 grid-cols-1 md:grid-cols-2">
+    <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
         <div class="md:rounded-md overflow-hidden">
             <img alt="I hate the blind" src={itemVal.image} />
         </div>
