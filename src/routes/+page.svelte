@@ -11,16 +11,9 @@
 
     let { data } = $props();
 
-    let userHasTyped = $state(!!$page.url.searchParams.get("q"));
     let maxPrice = $state(0);
 
     let query = $state($page.url.searchParams.get("q") ?? "");
-    let sortType: string = $state(
-        $page.url.searchParams.get("sortType") ?? "ASCENDING",
-    );
-    let sortBy: string = $state(
-        $page.url.searchParams.get("sortBy") ?? "PRICE_PER_WEIGHT",
-    );
 
     let selectedCategory: string | undefined = $state(
         $page.url.searchParams.get("category") ?? "",
@@ -38,9 +31,7 @@
     function getParams(): string {
         const params = new URLSearchParams();
         if (selectedCategory) params.append("category", selectedCategory);
-        untrack(() => {
-            if (selectedItem) params.append("item", selectedItem);
-        });
+        if (selectedItem) params.append("item", selectedItem);
         if (query) params.append("q", query);
 
         return params.toString();
@@ -59,7 +50,6 @@
     });
 
     const onKeyDown = (e: KeyboardEvent) => {
-        userHasTyped = true;
 
         // if (e.key === "Enter") {
         //     goto(`/search?q=${encodeURIComponent(searchInput.value)}`);
@@ -93,10 +83,15 @@
 <section class="flex flex-col gap-4 px-4">
     <div class="flex justify-center">
         <div class="flex flex-col w-full h-fit">
-            {#if !userHasTyped}
+            {#if !query && !selectedCategory}
                 <span
-                    transition:slide={{
+                    out:slide={{
                         delay: 200,
+                        duration: 800,
+                        easing: quintInOut,
+                        axis: "y",
+                    }}
+                    in:slide={{
                         duration: 800,
                         easing: quintInOut,
                         axis: "y",
