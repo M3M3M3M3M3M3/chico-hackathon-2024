@@ -11,12 +11,12 @@
 
     const onInput: FormEventHandler<HTMLInputElement> = (e) => {
         /* @ts-ignore */
-        let input = e.target.value;
+        let query = e.target.value;
 
         fetch("/search", {
             method: "POST",
             body: JSON.stringify({
-                input,
+                query,
             } as SearchParams),
         })
             .then((res) => res.json())
