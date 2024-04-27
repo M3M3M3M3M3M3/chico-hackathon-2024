@@ -39,7 +39,7 @@ export const load: PageServerLoad = async ({ url }) => {
                 })
                 .from(item)
                 .leftJoin(itemPrice, eq(item.id, itemPrice.itemId))
-                .innerJoin(unit, eq(itemPrice.unitId, unit.id))
+                .leftJoin(unit, eq(itemPrice.unitId, unit.id))
                 .where(eq(item.storeId, itemId))
                 .limit(1)
         )[0];
