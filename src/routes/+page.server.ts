@@ -1,6 +1,5 @@
-import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import safeway_data from "../../../static/safeway_clean_data.json";
+import type { PageServerLoad } from "./$types";
+import safeway_data from "$lib/safeway_clean_data.json";
 
 export type SearchParams = {
     query: string;
@@ -9,8 +8,15 @@ export type SearchParams = {
     sortType: "ASCENDING" | "DESCENDING";
 };
 
-export const POST: RequestHandler = async ({ request }) => {
-    const { query, category } = (await request.json()) as SearchParams;
+export const load: PageServerLoad = ({ url }) => {
+    // let sortType = url.searchParams.get("sortType") ?? "ASCENDING";
+    // let sortBy = url.searchParams.get("sortBy") ?? "PRICE_PER_WEIGHT";
+    let category = url.searchParams.get("category") ?? "";
+    let query = url.searchParams.get("q") ?? "";
+
+    if (!query) {
+        return { categories: [], items: [] };
+    }
 
     let newItems = (safeway_data as any).items.filter((item: any) => {
         return (
@@ -35,8 +41,12 @@ export const POST: RequestHandler = async ({ request }) => {
         item.toLowerCase().includes(query.toLowerCase()),
     );
 
-    return json({
-        items: newItems.slice(0, 20),
+    if (!category) {
+        newItems = newItems.slice(0, 20);
+    }
+
+    return {
+        items: newItems,
         categories,
-    });
+    };
 };

@@ -1,6 +1,6 @@
 import { error } from "@sveltejs/kit";
 import type { PageLoad } from "./$types";
-import safeway_data from "../../../../static/safeway_clean_data.json";
+import safeway_data from "$lib/safeway_clean_data.json";
 
 export type ItemInfo = {
     id: string;
