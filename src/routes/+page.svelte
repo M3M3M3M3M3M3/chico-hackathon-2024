@@ -1,7 +1,5 @@
 <script>
-    import Counter from "./Counter.svelte";
-    import welcome from "$lib/images/svelte-welcome.webp";
-    import welcome_fallback from "$lib/images/svelte-welcome.png";
+    import FeaturedItem from "./FeaturedItem.svelte";
 </script>
 
 <svelte:head>
@@ -9,6 +7,17 @@
     <meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<section>
-    <Counter />
+<section class="flex flex-col gap-4 px-4">
+    <span class="font-bold text-lg">Generic Items</span>
+
+    <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+    >
+        <FeaturedItem />
+        <FeaturedItem />
+        <FeaturedItem />
+        <FeaturedItem />
+        <FeaturedItem />
+        <FeaturedItem />
+    </div>
 </section>

@@ -4,6 +4,7 @@ import type { PageLoad } from "./$types";
 export type ItemInfo = {
     title: string;
     content: string;
+    buy_quality: "GOOD" | "MEDIUM" | "BAD";
 };
 
 export const load: PageLoad<ItemInfo> = ({ params }) => {
@@ -11,6 +12,7 @@ export const load: PageLoad<ItemInfo> = ({ params }) => {
         return {
             title: "Banana",
             content: "It is a banana",
+            buy_quality: "BAD",
         };
     }
 
