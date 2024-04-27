@@ -5,29 +5,35 @@
     import { goto } from "$app/navigation";
     import { formatMoney } from "../utils";
 
-    let items: ItemInfo[] = [];
+    let items: ItemInfo[] = $state([]);
+    let categories = $state([]);
+    let query = $state("");
+
+    let selectedCategory: string | undefined = $state(undefined);
 
     let searchInput: HTMLInputElement;
 
-    const onInput: FormEventHandler<HTMLInputElement> = (e) => {
-        /* @ts-ignore */
-        let query = e.target.value;
-
+    $effect(() => {
         fetch("/search", {
             method: "POST",
             body: JSON.stringify({
                 query,
+                category: selectedCategory,
             } as SearchParams),
         })
             .then((res) => res.json())
             .then((res) => {
-                items = res;
+                items = res.items;
+                categories = res.categories;
             });
-    };
+    });
 
     const onKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Enter") {
             goto(`/search?q=${encodeURIComponent(searchInput.value)}`);
+        }
+        if (e.key === "Backspace" && !query) {
+            selectedCategory = undefined;
         }
     };
 </script>
@@ -35,16 +41,22 @@
 <div class="relative w-full flex justify-center">
     <div
         onfocus={() => {
-            // searchInput.focus();
+            searchInput.focus();
         }}
         class="flex items-center rounded-full pr-6 text-lg bg-blue-50 overflow-hidden focus-within:ring-4 transition-all ring-2 placeholder-blue-400 ring-blue-600 w-full md:max-w-[70%]"
     >
+        {#if selectedCategory}
+            <div class="ml-2 rounded-full px-4 py-2 text-white bg-neutral-700">
+                {selectedCategory}
+            </div>
+        {/if}
+
         <input
             bind:this={searchInput}
-            oninput={onInput}
+            bind:value={query}
             onkeydown={onKeyDown}
             placeholder="Search"
-            class="bg-inherit flex-grow outline-none px-6 py-4"
+            class="bg-inherit flex-grow outline-none px-4 first:px-6 py-4"
         />
 
         <svg
@@ -62,8 +74,27 @@
 
     {#if items.length !== 0}
         <div
-            class="z-50 max-h-72 overflow-auto absolute top-20 w-[70%] rounded-md bg-white border-neutral-300 border flex flex-col"
+            class="z-50 max-h-72 max-w-full overflow-y-auto absolute top-20 w-[70%] rounded-md bg-white border-neutral-300 border flex flex-col"
         >
+            {#if !selectedCategory && categories.length !== 0}
+                <div class="max-w-full">
+                    <div class="overflow-auto p-2 flex gap-2">
+                        {#each categories as category}
+                            <button
+                                onclick={() => {
+                                    selectedCategory = category;
+                                    query = "";
+                                    searchInput.focus();
+                                }}
+                                class="px-4 py-2 border-neutral-500 rounded-full border focus:bg-blue-50 transition-all"
+                            >
+                                {category}
+                            </button>
+                        {/each}
+                    </div>
+                </div>
+            {/if}
+
             {#each items as item}
                 <a
                     href="/item/{item.id}"

@@ -2,7 +2,12 @@ import type { ItemInfo } from "../item/[slug]/+page";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = ({ url }) => {
-    console.log(url.searchParams.get("q"));
+    let sortType = url.searchParams.get("sortType") ?? "ASCENDING";
+    let sortBy = url.searchParams.get("sortBy") ?? "PRICE_PER_WEIGHT";
+    let category = url.searchParams.get("category");
+    let query = url.searchParams.get("q");
+
+    console.log({ sortBy, sortType, query });
 
     return {
         items: [
