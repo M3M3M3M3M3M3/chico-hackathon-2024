@@ -14,8 +14,14 @@ export const load: PageServerLoad = ({ url }) => {
     let category = url.searchParams.get("category") ?? "";
     let query = url.searchParams.get("q") ?? "";
 
+    let itemId = url.searchParams.get("item") ?? "";
+
+    let item = itemId
+        ? safeway_data.items.filter((item) => item.id === itemId)[0]
+        : undefined;
+
     if (!query && !category) {
-        return { categories: [], items: [] };
+        return { categories: [], items: [], item };
     }
 
     let newItems = (safeway_data as any).items.filter((item: any) => {
@@ -48,5 +54,6 @@ export const load: PageServerLoad = ({ url }) => {
     return {
         items: newItems,
         categories,
+        item,
     };
 };

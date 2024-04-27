@@ -1,12 +1,13 @@
 <script lang="ts">
     import type { FormEventHandler } from "svelte/elements";
-    import type { ItemInfo } from "./item/[slug]/+page";
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
     import { formatMoney } from "../utils";
-    import { slide } from "svelte/transition";
+    import { fade, scale, slide } from "svelte/transition";
     import { cubicInOut, quintInOut, quintOut } from "svelte/easing";
-    import { onMount } from "svelte";
+    import { onMount, untrack } from "svelte";
+    import Modal from "./Modal.svelte";
+    import ItemView from "./ItemView.svelte";
 
     let userHasTyped = $state(!!$page.url.searchParams.get("q"));
 
@@ -18,22 +19,34 @@
         $page.url.searchParams.get("sortBy") ?? "PRICE_PER_WEIGHT",
     );
 
-    let selectedCategory: string | undefined = $state(undefined);
+    let selectedCategory: string | undefined = $state(
+        $page.url.searchParams.get("category") ?? "",
+    );
+    let selectedItem: string | undefined = $state(
+        $page.url.searchParams.get("item") ?? "",
+    );
 
     let searchInput: HTMLInputElement;
+
+    function getParams(): string {
+        const params = new URLSearchParams();
+        if (selectedCategory) params.append("category", selectedCategory);
+        untrack(() => {
+            if (selectedItem) params.append("item", selectedItem);
+        });
+        if (query) params.append("q", query);
+
+        return params.toString();
+    }
 
     onMount(() => {
         searchInput.focus();
     });
 
     $effect(() => {
-        const params = new URLSearchParams();
-
-        if (selectedCategory) params.append("category", selectedCategory);
-        params.append("q", query);
-
-        goto(`/?${params.toString()}`, {
+        goto(`/?${getParams()}`, {
             replaceState: true,
+            noScroll: true,
             keepFocus: true,
         });
     });
@@ -56,6 +69,21 @@
     <title>DealFinder</title>
     <meta name="description" content="Deal Finder" />
 </svelte:head>
+
+<Modal
+    shown={data.item}
+    close={() => {
+        selectedItem = undefined;
+        goto(`/?${getParams()}`, {
+            replaceState: true,
+            noScroll: true,
+            keepFocus: true,
+        });
+        history.back();
+    }}
+>
+    <ItemView item={data.item} />
+</Modal>
 
 <section class="flex flex-col gap-4 px-4">
     <div class="flex justify-center">
@@ -146,9 +174,17 @@
                     class="w-full border-neutral-300 flex flex-col border rounded-xl overflow-hidden mt-4"
                 >
                     {#each data.items as item}
-                        <a
-                            href="/item/{item.id}"
-                            class="border-neutral-300 border-b last:border-0 hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-all gap-4 items-center flex"
+                        <button
+                            onclick={() => {
+                                selectedItem = item.id;
+                                goto(`/?${getParams()}`, {
+                                    noScroll: true,
+                                    keepFocus: true,
+                                });
+                            }}
+                            class="border-neutral-300 border-b last:border-0
+                            hover:bg-blue-50 focus:bg-blue-50 focus:outline-none
+                            transition-all gap-4 items-center flex text-left"
                         >
                             <span
                                 class="h-20 w-20 bg-cover"
@@ -165,7 +201,7 @@
                                     ><span class="text-sm">/oz</span>
                                 </div>
                             </div>
-                        </a>
+                        </button>
                     {/each}
                 </div>
             {/if}
