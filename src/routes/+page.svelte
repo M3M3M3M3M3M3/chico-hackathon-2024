@@ -12,7 +12,7 @@ import ItemView from "./item/[slug]/+page.svelte";
 import type { PageData } from "./$types";
 
 let maxPrice = $state(0);
-let filterPrice = $state(0);
+let filterPrice = $state(Number.MAX_VALUE);
 let minPrice = $state(0);
 
 let query = $state($page.url.searchParams.get("q") ?? "");
@@ -97,7 +97,7 @@ $effect(() => {
                 easing: quintInOut,
                 axis: "y",
             }}
-            class="mb-2 mt-[30vh] text-center text-6xl font-extrabold italic"
+            class="mb-2 mt-8 md:mt-[30vh] text-center text-5xl md:text-6xl font-extrabold italic"
             >DealFinder</span
         >
     {/if}
