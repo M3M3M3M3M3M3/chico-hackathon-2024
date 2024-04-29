@@ -65,6 +65,12 @@ $effect(() => {
         prevDisplayItem = $page.state.displayItem;
     }
 });
+
+let jsEnabled = $state(false);
+
+onMount(() => {
+    jsEnabled = true;
+});
 </script>
 
 <svelte:head>
@@ -103,13 +109,20 @@ $effect(() => {
     {/if}
 
     <div class="px-2">
-        <div
+        <form
+            method="GET"
+            action="/"
+            onsubmit={(e) => {
+                e.preventDefault();
+            }}
             onfocus={() => {
                 searchInput.focus();
             }}
             class="flex w-full items-center overflow-hidden rounded-full border-2 border-blue-600 bg-blue-50 pl-2 pr-6 text-lg ring-blue-600 transition-all focus-within:ring-2 dark:border-amber-600 dark:bg-amber-200 dark:text-black dark:ring-amber-600"
         >
             {#if selectedCategory}
+                <input type="hidden" name="category" value={selectedCategory} />
+
                 <div
                     out:slide={{
                         duration: 300,
@@ -123,6 +136,7 @@ $effect(() => {
             {/if}
 
             <input
+                name="q"
                 bind:this={searchInput}
                 bind:value={query}
                 onkeydown={onKeyDown}
@@ -130,18 +144,20 @@ $effect(() => {
                 class="flex-grow bg-inherit px-4 py-4 placeholder-blue-400 outline-none dark:placeholder-amber-600"
             />
 
-            <svg
-                class="h-7 w-7 fill-blue-700 dark:fill-amber-600"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                id="search"
-                ><g
-                    ><path
-                        d="m20.71 19.29-3.4-3.39A7.92 7.92 0 0 0 19 11a8 8 0 1 0-8 8 7.92 7.92 0 0 0 4.9-1.69l3.39 3.4a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42zM5 11a6 6 0 1 1 6 6 6 6 0 0 1-6-6z"
-                    ></path></g
-                ></svg
-            >
-        </div>
+            <button type="submit">
+                <svg
+                    class="h-7 w-7 fill-blue-700 dark:fill-amber-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    id="search"
+                    ><g
+                        ><path
+                            d="m20.71 19.29-3.4-3.39A7.92 7.92 0 0 0 19 11a8 8 0 1 0-8 8 7.92 7.92 0 0 0 4.9-1.69l3.39 3.4a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42zM5 11a6 6 0 1 1 6 6 6 6 0 0 1-6-6z"
+                        ></path></g
+                    ></svg
+                >
+            </button>
+        </form>
     </div>
 
     {#if !selectedCategory && data.categories.length !== 0}
@@ -155,8 +171,10 @@ $effect(() => {
         >
             <div class="flex gap-2 overflow-auto">
                 {#each data.categories as category}
-                    <button
-                        onclick={() => {
+                    <a
+                        href={`?category=${category}`}
+                        onclick={(e) => {
+                            e.preventDefault();
                             selectedCategory = category;
                             query = "";
                             searchInput.focus();
@@ -164,13 +182,13 @@ $effect(() => {
                         class="text-nowrap rounded-full border border-neutral-300 px-4 py-2 capitalize transition-all hover:bg-blue-50 focus:bg-blue-50 dark:border-neutral-600 dark:bg-black hover:dark:bg-amber-900 focus:dark:bg-amber-900"
                     >
                         {formatCategory(category)}
-                    </button>
+                    </a>
                 {/each}
             </div>
         </div>
     {/if}
 
-    {#if selectedCategory && data.items.length !== 0}
+    {#if jsEnabled && selectedCategory && data.items.length !== 0}
         <div class="px-2">
             <div
                 transition:slide={{
