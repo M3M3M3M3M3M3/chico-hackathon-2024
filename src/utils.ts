@@ -8,13 +8,3 @@ export function formatMoney(money: number): string {
 export function formatCategory(category: string): string {
     return category.replaceAll("_", " ");
 }
-
-export type ItemInfo = {
-    id: string;
-    title: string;
-    content: string;
-    image: string;
-    price: number;
-    category: string;
-    buy_quality: "GOOD" | "MEDIUM" | "BAD";
-};

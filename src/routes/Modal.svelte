@@ -1,55 +1,78 @@
 <script lang="ts">
-    import { onDestroy, onMount } from "svelte";
-    import { quintOut } from "svelte/easing";
-    import { fade, scale } from "svelte/transition";
+import { onDestroy, onMount, type Snippet } from "svelte";
+import { quintOut } from "svelte/easing";
+import { fade, scale } from "svelte/transition";
 
-    let { close, shown }: { close: () => void; shown: boolean } = $props();
+let {
+    close,
+    children,
+    shown,
+}: { close: () => void; children: Snippet; shown: boolean } = $props();
+let dialogElement = $state<HTMLDialogElement>();
+let childrenCopy = $state<Snippet>(children);
 
-    const keyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") {
-            close();
-        }
-    };
-
-    onMount(() => {
-        document.addEventListener("keydown", keyDown);
-    });
+$effect(() => {
+    if (shown) {
+        dialogElement?.showModal();
+    } else {
+        dialogElement?.close();
+    }
+});
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_interactive_supports_focus -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-{#if shown}
-    <div
-        transition:fade={{
-            duration: 400,
-        }}
-        onclick={() => {
-            close();
-        }}
-        class="z-50 fixed left-0 right-0 top-0 bottom-0 bg-black/10 dark:bg-white/10 flex sm:place-items-center place-items-end justify-center overscroll-none"
+<dialog
+    bind:this={dialogElement}
+    onclose={(e) => {
+        if (shown) close();
+    }}
+    class="fixed z-50 mb-0 flex h-[90dvh] max-h-screen w-full max-w-full flex-col overflow-auto rounded-t-xl bg-white p-4 sm:m-auto sm:h-min sm:max-w-screen-sm sm:rounded-b-xl dark:bg-black"
+>
+    <button
+        onclick={() => dialogElement?.close()}
+        class="sticky top-0 mb-[-3rem] aspect-square min-h-12 min-w-12 select-none self-end rounded-full bg-black text-center text-2xl text-white transition-colors hover:bg-neutral-800 sm:mb-0 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
     >
-        <div
-            transition:scale={{
-                duration: 400,
-                opacity: 0.0,
-                start: 0.5,
-                easing: quintOut,
-            }}
-            onclick={(e) => {
-                e.stopImmediatePropagation();
-            }}
-            class="container relative w-full h-[90dvh] sm:h-min overflow-auto sm:max-w-screen-sm max-h-screen rounded-t-xl sm:rounded-b-xl shadow-lg bg-white dark:bg-black p-4"
-        >
-            <button
-                onclick={() => close()}
-                class="absolute hover:bg-neutral-800 transition-colors top-4 right-4 w-8 h-8 aspect-square rounded-full bg-black dark:bg-white dark:hover:bg-neutral-200 dark:text-black text-white text-center"
-            >
-                ×
-            </button>
+        ×
+    </button>
 
-            <slot />
-        </div>
-    </div>
-{/if}
+    {@render childrenCopy()}
+</dialog>
+
+<style>
+dialog {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+        box-shadow 300ms cubic-bezier(0.645, 0.045, 0.355, 1),
+        opacity 300ms cubic-bezier(0.645, 0.045, 0.355, 1),
+        transform 300ms cubic-bezier(0.645, 0.045, 0.355, 1);
+
+    box-shadow:
+        0 0 0 calc(max(400vw, 400vh)) rgba(0, 0, 0, 0.2),
+        0 4px 16px -2px rgba(0, 0, 0, 0.3);
+}
+
+dialog::backdrop {
+    display: none;
+}
+
+dialog:not([open]) {
+    opacity: 0;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+
+    pointer-events: none;
+    transform: translateY(100vh);
+}
+
+@media (min-width: 640px) {
+    dialog {
+        transition:
+            box-shadow 300ms cubic-bezier(0.215, 0.61, 0.355, 1),
+            opacity 300ms cubic-bezier(0.215, 0.61, 0.355, 1),
+            transform 300ms cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    dialog:not([open]) {
+        transform: translateY(100px) scale(0.4);
+    }
+}
+</style>
