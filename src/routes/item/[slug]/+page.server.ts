@@ -12,8 +12,6 @@ export const load: PageServerLoad = async ({ params }) => {
 
     let itemId = params.slug;
 
-    console.log("hi");
-
     let results = await db
         .select({
             id: item.storeId,

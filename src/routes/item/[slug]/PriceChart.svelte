@@ -6,14 +6,20 @@ import { onDestroy, onMount } from "svelte";
 let canvas: HTMLCanvasElement;
 let chart: Chart;
 
-export let priceData: { date: string; price: number }[];
-export let dealData: { date: string; price: number };
+const {
+    priceData,
+    dealData,
+}: {
+    priceData: { date: string; price: number }[];
+    dealData: { date: string; price: number };
+} = $props();
 
 let currentMonthIndex = 0;
 let maxMonthIndex = 0;
-let monthlyData: {
-    [key: string]: { labels: number[]; prices: (number | null)[] };
-} = {};
+let monthlyData: Record<
+    string,
+    { labels: number[]; prices: (number | null)[] }
+> = {};
 
 function parseDataIntoMonths() {
     monthlyData = {};
@@ -169,6 +175,7 @@ function updateChart() {
             plugins.title.text = `${monthName} ${year}`;
         }
     }
+
     chart.update();
 }
 
@@ -219,49 +226,44 @@ const ButtonPlugin = {
             chartArea: { left, right, top, bottom, width, height },
         } = chart;
 
-        class CircleChevron {
-            draw(
-                ctx: CanvasRenderingContext2D,
-                x1: number,
-                pixel: number,
-                shiftUp: number
-            ) {
-                const angle = Math.PI / 180;
-                ctx.beginPath();
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = "rgba(102, 102, 102, 0.5)";
-                ctx.fillStyle = "white";
-                ctx.arc(
-                    x1,
-                    height / 2 + top - shiftUp,
-                    15,
-                    angle * 0,
-                    angle * 360,
-                    false
-                );
-                ctx.stroke();
-                ctx.fill();
-                ctx.closePath();
+        function circleChevron(
+            ctx: CanvasRenderingContext2D,
+            x1: number,
+            pixel: number,
+            shiftUp: number
+        ) {
+            const angle = Math.PI / 180;
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "rgba(102, 102, 102, 0.5)";
+            ctx.fillStyle = "white";
+            ctx.arc(
+                x1,
+                height / 2 + top - shiftUp,
+                15,
+                angle * 0,
+                angle * 360,
+                false
+            );
+            ctx.stroke();
+            ctx.fill();
+            ctx.closePath();
 
-                ctx.beginPath();
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = "rgba(255, 26, 104, 1)";
-                ctx.moveTo(x1 + pixel, height / 2 + top - 7.5 - shiftUp);
-                ctx.lineTo(x1 - pixel, height / 2 + top - shiftUp);
-                ctx.lineTo(x1 + pixel, height / 2 + top + 7.5 - shiftUp);
-                ctx.stroke();
-                ctx.closePath();
-            }
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "rgba(255, 26, 104, 1)";
+            ctx.moveTo(x1 + pixel, height / 2 + top - 7.5 - shiftUp);
+            ctx.lineTo(x1 - pixel, height / 2 + top - shiftUp);
+            ctx.lineTo(x1 + pixel, height / 2 + top + 7.5 - shiftUp);
+            ctx.stroke();
+            ctx.closePath();
         }
 
         let shiftUpValue = 164;
         let sideOffSet = 15;
 
-        let drawCircleLeft = new CircleChevron();
-        drawCircleLeft.draw(ctx, left + sideOffSet, 5, shiftUpValue);
-
-        let drawCircleRight = new CircleChevron();
-        drawCircleRight.draw(ctx, right - sideOffSet, -5, shiftUpValue);
+        circleChevron(ctx, left + sideOffSet, 5, shiftUpValue);
+        circleChevron(ctx, right - sideOffSet, -5, shiftUpValue);
     },
 };
 function clickHandler() {
@@ -298,8 +300,14 @@ function clickHandler() {
     });
 }
 
-onMount(() => {
+// $effect(() => {
+//     if (chart) updateChart();
+// });
+
+$effect(() => {
     parseDataIntoMonths();
+
+    if (chart) chart.destroy();
     chart = new Chart(canvas, {
         type: "line",
         plugins: [ButtonPlugin],
@@ -364,7 +372,9 @@ onMount(() => {
     clickHandler();
 });
 
-onDestroy(() => {});
+onDestroy(() => {
+    if (chart) chart.destroy();
+});
 </script>
 
 <canvas bind:this={canvas}></canvas>
