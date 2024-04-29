@@ -6,8 +6,8 @@ import { onDestroy, onMount } from "svelte";
 let canvas: HTMLCanvasElement;
 let chart: Chart;
 
-export let priceData: { day: string; price: number }[];
-export let dealData: { day: string; price: number };
+export let priceData: { date: string; price: number }[];
+export let dealData: { date: string; price: number };
 
 let currentMonthIndex = 0;
 let maxMonthIndex = 0;
@@ -18,7 +18,7 @@ let monthlyData: {
 function parseDataIntoMonths() {
     monthlyData = {};
     priceData.forEach((data) => {
-        const dataDate = new Date(data.day);
+        const dataDate = new Date(data.date);
         const year = dataDate.getUTCFullYear();
         const month = dataDate.getUTCMonth();
         const day = dataDate.getUTCDate();
@@ -37,7 +37,7 @@ function parseDataIntoMonths() {
     });
     currentMonthIndex = Object.keys(monthlyData).length - 1;
 
-    const dealDate = new Date(dealData.day);
+    const dealDate = new Date(dealData.date);
     const dealYear = dealDate.getUTCFullYear();
     const dealMonth = dealDate.getUTCMonth();
     const lastMonthKey = Object.keys(monthlyData).pop();
@@ -78,7 +78,7 @@ function updateChart() {
         chart.data.labels = extendedLabels;
         chart.data.datasets[0].data = extendedPrices;
 
-        const dealDate = new Date(dealData.day);
+        const dealDate = new Date(dealData.date);
         const dealDay = dealDate.getUTCDate();
 
         chart.data.datasets[1] = {
@@ -115,7 +115,7 @@ function updateChart() {
         chart.data.datasets[0].data = extendedPrices;
 
         if (lastNonNullIndex !== -1) {
-            const dealDate = new Date(dealData.day);
+            const dealDate = new Date(dealData.date);
             const dealYear = dealDate.getUTCFullYear();
             const dealMonth = dealDate.getUTCMonth();
             const dealDay = dealDate.getUTCDate();
