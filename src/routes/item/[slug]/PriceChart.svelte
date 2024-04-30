@@ -300,10 +300,6 @@ function clickHandler() {
     });
 }
 
-// $effect(() => {
-//     if (chart) updateChart();
-// });
-
 $effect(() => {
     parseDataIntoMonths();
 

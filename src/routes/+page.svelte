@@ -1,9 +1,8 @@
 <script lang="ts">
-import type { FormEventHandler } from "svelte/elements";
 import { page } from "$app/stores";
 import { goto } from "$app/navigation";
 import { formatCategory, formatMoney } from "../utils";
-import { fade, scale, slide } from "svelte/transition";
+import { slide } from "svelte/transition";
 import { cubicInOut, quintInOut, quintOut } from "svelte/easing";
 import { onMount } from "svelte";
 import Modal from "./Modal.svelte";

@@ -29,7 +29,7 @@ let { currentPrice, nextPrice } = $derived.by(() => {
 // });
 </script>
 
-<div class="flex flex-col gap-4">
+<div class="flex flex-col gap-4 dark:text-white">
     <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <div class="flex justify-center overflow-hidden md:rounded-md">
             <img alt="product" src={data.image} />
@@ -46,14 +46,14 @@ let { currentPrice, nextPrice } = $derived.by(() => {
             </div>
 
             <div class="flex flex-col place-items-center">
-                <div class="flex gap-2 items-center">
+                <div class="flex items-center gap-2">
                     <span class="w-min text-4xl font-extrabold {priceStyles}"
                         >{formatMoney(currentPrice)}</span
                     >
 
                     {#if nextPrice != currentPrice}
                         <span
-                            class="w-min text-2xl bg-neutral-300 px-2 py-1 rounded line-through"
+                            class="w-min rounded bg-neutral-300 px-2 py-1 text-2xl line-through"
                             >{formatMoney(nextPrice)}</span
                         >
                     {/if}
