@@ -1,6 +1,6 @@
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { item, itemPrice, unit } from "../../../schema";
+import { category, listing, listingPrice, unit } from "../../../schema";
 import { max, eq, sql } from "drizzle-orm";
 import { db } from "../../../db";
 
@@ -14,25 +14,26 @@ export const load: PageServerLoad = async ({ params }) => {
 
     let results = await db
         .select({
-            id: item.storeId,
-            title: item.title,
-            date: itemPrice.date,
-            price: itemPrice.price,
-            image: item.imageUrl,
-            availability: itemPrice.availability,
-            pricePerUnit: itemPrice.pricePerUnit,
-            category: item.category,
-            unitDisplay: unit.unitDisplay,
+            id: listing.storeId,
+            title: listing.title,
+            date: listingPrice.date,
+            price: listingPrice.price,
+            totalUnits: listingPrice.totalUnits,
+            image: listing.imageUrl,
+            availability: listingPrice.available,
+            category: category.name,
+            unitDisplay: unit.display,
         })
-        .from(item)
-        .leftJoin(itemPrice, eq(item.id, itemPrice.itemId))
-        .leftJoin(unit, eq(itemPrice.unitId, unit.id))
-        .where(eq(item.storeId, itemId));
+        .from(listing)
+        .innerJoin(listingPrice, eq(listing.id, listingPrice.listingId))
+        .innerJoin(unit, eq(listing.unitId, unit.id))
+        .innerJoin(category, eq(listing.categoryId, category.id))
+        .where(eq(listing.storeId, itemId)).all();
 
     let priceDates = results.map((result) => ({
         date: result.date,
         price: result.price,
-        pricePerUnit: result.pricePerUnit
+        totalUnits: result.totalUnits,
     }));
 
     return {

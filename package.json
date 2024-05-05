@@ -31,7 +31,9 @@
     "type": "module",
     "dependencies": {
         "@libsql/client": "^0.6.0",
+        "async-q": "^0.3.1",
         "chart.js": "^4.4.2",
+        "compute-cosine-similarity": "^1.1.0",
         "dotenv": "^16.4.5",
         "drizzle-orm": "^0.30.9",
         "fuse.js": "^7.0.0"

@@ -1,29 +1,33 @@
 import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 // import { sql } from "drizzle-orm";
 
-export const item = sqliteTable("item", {
+export const listing = sqliteTable("listing", {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    storeId: text("store_id").unique(),
+    unitId: integer("unit_id").references(() => unit.id),
+    categoryId: integer("category_id").references(() => category.id),
+    storeId: text("store_id").unique().notNull(),
     imageUrl: text("image_url"),
-    category: text("category"),
-    snapEbt: integer("snap_sbt", { mode: "boolean" }),
-    title: text("title"),
+    snapEbt: integer("snap_sbt", { mode: "boolean" }).notNull(),
+    title: text("title").notNull(),
+});
+
+export const category = sqliteTable("category", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    name: text("name").unique().notNull(),
 });
 
 export const unit = sqliteTable("unit", {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    unitType: text("unit_type"),
-    unitDisplay: text("unit_display"),
+    type: text("unit_type").unique().notNull(),
+    display: text("unit_display").notNull(),
 });
 
-export const itemPrice = sqliteTable("item_price", {
+export const listingPrice = sqliteTable("listingPrice", {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    itemId: integer("item_id").references(() => item.id),
-    date: integer("date", { mode: "timestamp" }),
-    availability: text("availability"),
+    listingId: integer("listing_id").references(() => listing.id).notNull(),
+    date: integer("date", { mode: "timestamp" }).notNull(),
+    available: integer("available", { mode: "boolean" }),
     salesRank: integer("sales_rank"),
-    price: real("price"),
-    unitId: integer("unit_id").references(() => unit.id),
-    pricePerUnit: real("price_per_unit"),
-    totalUnits: real("total_units"),
+    price: real("price").notNull(),
+    totalUnits: real("total_units").notNull(),
 });

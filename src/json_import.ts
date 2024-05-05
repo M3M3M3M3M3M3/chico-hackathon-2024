@@ -4,9 +4,11 @@ import safeway_clean_data from "$lib/safeway_clean_data.json";
 import { configDotenv } from "dotenv";
 //import { db } from "./db";
 import * as schema from "./schema";
+import { listingPrice, listing, category, unit } from "./schema";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
+import asyncq from "async-q";
 
 configDotenv();
 
@@ -16,43 +18,47 @@ const client = createClient({
 });
 
 const db = drizzle(client, { schema });
-let units = await db.query.unit.findMany();
 
-const unitMapping: Record<string, number> = {};
-for (let u of units) {
-    unitMapping[u.unitType!] = u.id;
-}
+let tasks = safeway_clean_data.items.map((item, i) => async () => {
+    console.log(`[${i}] Inserting item storeId=${item.id}`);
 
-for (let item of safeway_clean_data.items) {
     try {
-        for (let upcoming_price of item.upcoming_prices) {
-            let data = await db
-                .select({ id: schema.item.id })
-                .from(schema.item)
-                .where(eq(schema.item.storeId, item.id));
+        await db.insert(category).values({
+            name: item.type
+        }).onConflictDoNothing();
+        let categoryId = (await db.select({ id: category.id }).from(category).where(eq(category.name, item.type)))[0].id;
 
-            console.log("inserting", data);
+        let unitId = undefined;
+        if (item.unit_price) {
+            await db.insert(unit).values({
+                type: item.unit_price.type,
+                display: item.unit_price.canonical_unit.display
+            }).onConflictDoNothing();
 
-            await db.insert(schema.itemPrice).values({
-                itemId: data[0].id,
-                date: new Date(upcoming_price.date),
-                price: upcoming_price.price,
-                // unitId: item.unit_price
-                //     ? unitMapping[item.unit_price.type]
-                //     : undefined,
-                // pricePerUnit: item.unit_price?.canonical_unit.price_per,
-                // totalUnits: item.unit_price?.canonical_unit.total_units,
-                // availability: item.availability,
-            });
+            unitId = (await db.select({ id: unit.id }).from(unit).where(eq(unit.display, item.unit_price.canonical_unit.display)))[0].id;
         }
+
+        // insert item if it doesn't exist
+        await db.insert(listing).values({
+            storeId: item.id,
+            title: item.title,
+            imageUrl: item.image,
+            categoryId,
+            unitId,
+            snapEbt: item.snap_ebt,
+        }).onConflictDoNothing();
+
+        await db.insert(listingPrice).values({
+            listingId: sql<number>`(SELECT ${listing.id} FROM ${listing} WHERE ${listing.storeId} = ${item.id})`,
+            date: new Date("2024-04-27"),
+            available: item.availability === "in_stock",
+            salesRank: item._temp.sales_rank,
+            price: item.price,
+            totalUnits: item.unit_price?.canonical_unit.total_units ?? 1,
+        });
     } catch (e) {
         console.log(e);
     }
-}
+});
 
-// for (let u of unitList) {
-//     await db.insert(schema.unit).values({
-//         unitType: u.type,
-//         unitDisplay: u.display,
-//     });
-// }
+asyncq.parallelLimit(tasks, 20);

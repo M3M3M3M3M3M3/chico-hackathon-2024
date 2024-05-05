@@ -1,7 +1,7 @@
 <script lang="ts">
 import { page } from "$app/stores";
 import { goto } from "$app/navigation";
-import { formatCategory, formatMoney } from "../utils";
+import { formatCategory, formatMoney, priceDatesGetCurrent } from "../utils";
 import { slide } from "svelte/transition";
 import { cubicInOut, quintInOut, quintOut } from "svelte/easing";
 import { onMount } from "svelte";
@@ -22,7 +22,10 @@ let selectedCategory: string | undefined = $state(
 let { data }: { data: PageData } = $props();
 
 $effect(() => {
-    let prices = data.items.map((i: any) => i.prices[0]);
+    let prices = data.items.map((i: any) => {
+        let { current } = priceDatesGetCurrent(i.priceDates);
+        return current!.price;
+    });
     maxPrice = Math.max(...prices);
     minPrice = Math.min(...prices);
 
@@ -102,7 +105,7 @@ onMount(() => {
                 easing: quintInOut,
                 axis: "y",
             }}
-            class="mb-2 mt-8 md:mt-[30vh] text-center text-5xl md:text-6xl font-extrabold italic"
+            class="mb-2 mt-8 text-center text-5xl font-extrabold italic md:mt-[30vh] md:text-6xl"
             >DealFinder</span
         >
     {/if}
@@ -219,7 +222,7 @@ onMount(() => {
             <div
                 class="mt-4 flex w-full flex-col overflow-hidden rounded-xl border border-neutral-300 dark:border-neutral-600"
             >
-                {#each data.items.filter((i) => i.prices[0] <= filterPrice) as itemVal}
+                {#each data.items.filter((i) => priceDatesGetCurrent(i.priceDates).current!.price <= filterPrice) as itemVal}
                     <ItemListing {itemVal} />
                 {/each}
             </div>
