@@ -6,7 +6,7 @@ export function formatMoney(money: number): string {
     }).format(money);
 }
 
-type PriceDate = {
+export type PriceDate = {
     price: number;
     totalUnits: number;
     available: boolean;

@@ -2,6 +2,7 @@
 import { Chart } from "chart.js/auto";
 import type { ChartEvent } from "chart.js/auto";
 import { onDestroy, onMount } from "svelte";
+import { type PriceDate } from "../../../utils";
 
 let canvas: HTMLCanvasElement;
 let chart: Chart;
@@ -10,7 +11,7 @@ const {
     priceData,
     dealData,
 }: {
-    priceData: { date: string; price: number }[];
+    priceData: PriceDate[];
     dealData: { date: string; price: number };
 } = $props();
 
@@ -39,7 +40,7 @@ function parseDataIntoMonths() {
         }
 
         const dayIndex = day - 1;
-        monthlyData[monthKey].prices[dayIndex] = data.price;
+        monthlyData[monthKey].prices[dayIndex] = data.price / data.totalUnits;
     });
     currentMonthIndex = Object.keys(monthlyData).length - 1;
 
