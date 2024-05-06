@@ -3,6 +3,7 @@ import { db } from "../db";
 import { listing, unit, category, listingPrice } from "../schema";
 import type { PageServerLoad } from "./$types";
 import Fuse from "fuse.js";
+import { priceDatesGetCurrent } from "../utils";
 
 export const load: PageServerLoad = async ({ url }) => {
     let categoryName = url.searchParams.get("category") ?? "";
@@ -35,11 +36,7 @@ export const load: PageServerLoad = async ({ url }) => {
             )
         )
         .groupBy(listing.id)
-        .orderBy(
-            categoryName
-                ? sql`MIN(${listingPrice.price} / ${listingPrice.totalUnits})`
-                : sql`MIN(${listingPrice.salesRank})`
-        )
+        .orderBy(sql`MIN(${listingPrice.salesRank})`)
         .limit(categoryName ? 1000 : 20)).map((item) => {
             let totalUnits = (item.totalUnits as string).split(",").map(p => +p) as number[];
             let prices = (item.prices as string).split(",").map(p => +p) as number[];
@@ -64,6 +61,15 @@ export const load: PageServerLoad = async ({ url }) => {
                 category: item.category,
             }
         });
+
+    if (categoryName) {
+        newItems.sort((a, b) => {
+            let { current: currentA } = priceDatesGetCurrent(a.priceDates);
+            let { current: currentB } = priceDatesGetCurrent(b.priceDates);
+
+            return (currentA!.price / currentA!.totalUnits) - (currentB!.price / currentB!.totalUnits)
+        });
+    }
 
     let categories = (
         await db
