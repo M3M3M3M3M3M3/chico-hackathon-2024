@@ -190,6 +190,7 @@ onMount(() => {
                             e.preventDefault();
                             selectedCategory = category;
                             query = "";
+                            updateRoute();
                             searchInput.focus();
                         }}
                         class="text-nowrap rounded-full border border-neutral-300 px-4 py-2 capitalize transition-all hover:bg-blue-50 focus:bg-blue-50 dark:border-neutral-600 dark:bg-black hover:dark:bg-amber-900 focus:dark:bg-amber-900"

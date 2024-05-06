@@ -47,10 +47,20 @@ let tasks = safeway_clean_data.items.map((item, i) => async () => {
             unitId,
             snapEbt: item.snap_ebt,
         }).onConflictDoNothing();
+        // 2 dress shirt, one pattern, one plain. SIZE: 15.5, 32
+        // slim fit
+        // belt, same color as shoes
+        // sports coat
+        // dress shoes
+        // manicure
+        // bring socks (solid black)
+        // recommends stylish guy over stylish girl for
+        //
+        // tahoe rim trail
 
         await db.insert(listingPrice).values({
             listingId: sql<number>`(SELECT ${listing.id} FROM ${listing} WHERE ${listing.storeId} = ${item.id})`,
-            date: new Date("2024-04-27"),
+            date: new Date("2024-05-06"),
             available: item.availability === "in_stock",
             salesRank: item._temp.sales_rank,
             price: item.price,

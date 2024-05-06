@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ url }) => {
         return { categories: [], items: [] };
     }
 
-    let newItems = (await db
+    let items = (await db
         .select({
             id: listing.storeId,
             title: listing.title,
@@ -63,13 +63,14 @@ export const load: PageServerLoad = async ({ url }) => {
         });
 
     if (categoryName) {
-        newItems.sort((a, b) => {
+        items.sort((a, b) => {
             let { current: currentA } = priceDatesGetCurrent(a.priceDates);
             let { current: currentB } = priceDatesGetCurrent(b.priceDates);
 
             return (currentA!.price / currentA!.totalUnits) - (currentB!.price / currentB!.totalUnits)
         });
     }
+
 
     let categories = (
         await db
@@ -85,7 +86,7 @@ export const load: PageServerLoad = async ({ url }) => {
         .slice(0, 10);
 
     return {
-        items: newItems,
+        items,
         categories,
     };
 };
