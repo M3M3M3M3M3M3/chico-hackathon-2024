@@ -1,10 +1,10 @@
 <script lang="ts">
 import { page } from "$app/stores";
-import { goto } from "$app/navigation";
+import { afterNavigate, goto, onNavigate } from "$app/navigation";
 import { formatCategory, formatMoney, priceDatesGetCurrent } from "../utils";
 import { slide } from "svelte/transition";
 import { cubicInOut, quintInOut, quintOut } from "svelte/easing";
-import { onMount } from "svelte";
+import { onMount, untrack } from "svelte";
 import Modal from "./Modal.svelte";
 import ItemListing from "./ItemListing.svelte";
 import ItemView from "./item/[slug]/+page.svelte";
@@ -20,6 +20,11 @@ let selectedCategory: string | undefined = $state(
 );
 
 let { data }: { data: PageData } = $props();
+
+afterNavigate(() => {
+    query = $page.url.searchParams.get("q") ?? "";
+    selectedCategory = $page.url.searchParams.get("category") ?? "";
+});
 
 $effect(() => {
     let prices = data.items.map((i: any) => {
@@ -46,19 +51,22 @@ onMount(() => {
     searchInput.focus();
 });
 
-$effect(() => {
+$effect(() => {});
+
+const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Backspace" && !query) {
+        selectedCategory = undefined;
+        updateRoute();
+    }
+};
+
+function updateRoute() {
     goto(`/?${getParams()}`, {
         replaceState: true,
         noScroll: true,
         keepFocus: true,
     });
-});
-
-const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Backspace" && !query) {
-        selectedCategory = undefined;
-    }
-};
+}
 
 let prevDisplayItem = $state();
 
@@ -141,6 +149,9 @@ onMount(() => {
                 name="q"
                 bind:this={searchInput}
                 bind:value={query}
+                oninput={() => {
+                    updateRoute();
+                }}
                 onkeydown={onKeyDown}
                 placeholder="Search"
                 class="flex-grow bg-inherit px-4 py-4 placeholder-blue-400 outline-none dark:placeholder-amber-600"

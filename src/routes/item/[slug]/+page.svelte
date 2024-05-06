@@ -2,6 +2,8 @@
 import { formatCategory, formatMoney } from "../../../utils";
 import type { PageServerData } from "./$types";
 import PriceChart from "./PriceChart.svelte";
+import { page } from "$app/stores";
+import { goto } from "$app/navigation";
 
 let { data }: { data: PageServerData } = $props();
 
@@ -39,10 +41,20 @@ let { currentPrice, nextPrice } = $derived.by(() => {
             <div class="flex flex-col items-start gap-2">
                 <span class="text-3xl font-extrabold">{data.title}</span>
 
-                <span
-                    class="rounded-full bg-neutral-300 px-2 py-1 text-sm capitalize dark:bg-neutral-600"
+                <a
+                    href={`/?category=${data.category}`}
+                    onclick={(e) => {
+                        // if in popup, remove it
+                        if ($page.state.displayItem) {
+                            e.preventDefault();
+                            goto(`/?category=${data.category}`, {
+                                replaceState: true,
+                            });
+                        }
+                    }}
+                    class="rounded-full bg-neutral-300 px-2 py-1 text-sm capitalize transition-colors hover:bg-neutral-200 dark:bg-neutral-600 dark:hover:bg-neutral-500"
                     >{formatCategory(data.category)}
-                </span>
+                </a>
             </div>
 
             <div class="flex flex-col place-items-center">
