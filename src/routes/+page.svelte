@@ -157,7 +157,7 @@ onMount(() => {
                 class="flex-grow bg-inherit px-4 py-4 placeholder-blue-400 outline-none dark:placeholder-amber-600"
             />
 
-            <button type="submit">
+            <button type="submit" onclick={() => searchInput.focus()}>
                 <svg
                     class="h-7 w-7 fill-blue-700 dark:fill-amber-600"
                     xmlns="http://www.w3.org/2000/svg"
