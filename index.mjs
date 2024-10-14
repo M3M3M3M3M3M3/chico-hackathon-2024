@@ -142,16 +142,15 @@ async function paginateAndWrite(forceFetch = false) {
             `Refetch ${fetchNum + 1} found ${data.primaryProducts.response.numFound} items and saved to ${filename}`,
           );
           // Check if all known items are found
-          if (!data.primaryProducts.response.docs) {
-            continue;
-          }
-          for (const item of data.primaryProducts.response.docs) {
-            if (Checklist.has(item.id)) {
-              Checklist.delete(item.id);
+          if (data.primaryProducts.response.docs) {
+            for (const item of data.primaryProducts.response.docs) {
+              if (Checklist.has(item.id)) {
+                Checklist.delete(item.id);
+              }
             }
+            start += 30;
+            await sleep();
           }
-          start += 30;
-          await sleep();
         }
       }
     }
